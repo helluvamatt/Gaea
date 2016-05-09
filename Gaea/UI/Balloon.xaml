@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="Gaea.UI.Balloon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:Gaea.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+			 Loaded="Balloon_Loaded"
+			 MouseEnter="Balloon_MouseEnter"
+			 MouseLeave="Balloon_MouseLeave">
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="MaterialStyle.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+	<md:Card UniformCornerRadius="7" Background="{ DynamicResource PrimaryHueDarkBrush }" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" Padding="4" MouseLeftButtonUp="Card_MouseLeftButtonUp">
+		<md:Card.Effect>
+			<DropShadowEffect BlurRadius="8" Color="#99000000" />
+		</md:Card.Effect>
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<md:PackIcon x:Name="mdIcon" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Width="35" Margin="5" VerticalAlignment="Top" Height="35" Kind="AlertCircle" />
+			<TextBlock Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Margin="0,3,3,3" TextOptions.TextFormattingMode="Display" x:Name="textBlockTitle" Text="Title" FontSize="16" FontWeight="Bold" />
+			<TextBlock Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Margin="0,3,3,3" TextOptions.TextFormattingMode="Display" x:Name="textBlockCaption" Text="This is the caption" />
+
+			<Button x:Name="closeButton" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Top" BorderBrush="{x:Null}" Background="{x:Null}" Padding="0" Margin="0" Height="16" Width="16" Click="closeButton_Click">
+				<md:PackIcon  Kind="CloseCircle" />
+			</Button>
+		</Grid>
+	</md:Card>
+</UserControl>

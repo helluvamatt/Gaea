@@ -1,0 +1,33 @@
+﻿<tb:TaskbarIcon xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+				xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+				xmlns:domain="clr-namespace:Gaea.UI.Domain"
+				xmlns:tb="http://www.hardcodet.net/taskbar"
+				IconSource="{ DynamicResource appIcon }"
+				DoubleClickCommand="{ x:Static domain:GlobalCommands.ShowConfigCommand }"
+				MenuActivation="LeftOrRightClick"
+				x:Class="Gaea.UI.TrayIcon"
+				x:ClassModifier="internal">
+	<tb:TaskbarIcon.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="Styles.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</tb:TaskbarIcon.Resources>
+	<tb:TaskbarIcon.ContextMenu>
+		<ContextMenu>
+			<MenuItem x:Name="configurationMenuItem" Command="{ x:Static domain:GlobalCommands.ShowConfigCommand }">
+				<MenuItem.Header>
+					<TextBlock FontWeight="Bold">Configure...</TextBlock>
+				</MenuItem.Header>
+			</MenuItem>
+			<Separator />
+			<MenuItem Header="Show Log Window" Command="{ x:Static domain:GlobalCommands.ShowLogWindowCommand }" />
+			<Separator />
+			<MenuItem x:Name="nextBackgroundMenuItem" Header="Next Desktop Background" Command="{ Binding Path=WallpaperService.NextWallpaperCommand }" />
+			<MenuItem x:Name="openUrlMenuItem" Header="Open Source in Browser" Command="{ Binding Path=WallpaperService.OpenWallpaperLinkCommand }" />
+			<Separator />
+			<MenuItem x:Name="quitMenuItem" Header="Quit" Command="{ x:Static domain:GlobalCommands.ShutdownCommand }" />
+		</ContextMenu>
+	</tb:TaskbarIcon.ContextMenu>
+</tb:TaskbarIcon>

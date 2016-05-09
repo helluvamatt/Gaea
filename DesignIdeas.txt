@@ -1,0 +1,34 @@
+PreviewControl:
+	- Image preview (sized to fit, keep aspect ratio with monitor layout, include monitor simulation border)
+	- Title (clickable link to URL)
+	- URL (clickable link)
+	- "Next" button
+
+MainWindow:
+	- PreviewControl
+	- Options:
+		- "Blur" slider
+		- "Darken" slider
+		- "Desaturate" slider
+		- "Cache last N images" slider
+		- "Run at startup" checkbox
+		- "Optimize image size for multi-monitor" checkbox
+	- "Source" configuration
+		- List of installed/loaded source extensions (DLLs in "plugins" folder)
+		- Selected source config (Gear icon, opens new window)
+
+TrayIcon:
+	- PreviewControl
+	- Divider
+	- "Exit"
+
+Attribution:
+	example_flowers.jpg:
+		(C) 2013 Dominicus Johannes Bergsma
+		Licensed under the Creative Commons Attribution-Share Alike 4.0 International license.
+		https://commons.wikimedia.org/wiki/File:Krokussen_(Crocus),_Locatie,_Tuinreservaat_Jonkervallei.jpg
+	example_yosemite.jpg:
+		Public domain
+		https://commons.wikimedia.org/wiki/File:Yosemite_meadows_2004-09-04.jpg
+
+

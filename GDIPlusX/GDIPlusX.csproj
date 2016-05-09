@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C8F706D2-EF8F-401E-827F-46874649D3CF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GDIPlusX</RootNamespace>
+    <AssemblyName>GDIPlusX</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;Unsafe</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\GDIPlusX.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>Unsafe</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\GDIPlusX.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GDIPlus10\GDIPlus10NotAvailableException.cs" />
+    <Compile Include="GDIPlus10\GDIPlusVersionNotAvailableException.cs" />
+    <Compile Include="GDIPlus10\GraphicsExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\BrushExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\GraphicsExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\ObjectExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\PenExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\TypeExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\Interop10.cs" />
+    <Compile Include="GDIPlus11\BitmapExtensions.cs" />
+    <Compile Include="GDIPlus11\EffectsInternal\LegacyBitmapPerPixelEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\BitmapExtensions.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\BlurEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\BrightnessContrastEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\ColorBalanceEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\ColorCurveEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\ColorLookupTableEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\ColorMatrixEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\IAuxDataEffectLSHA.cs" />
+    <Compile Include="GDIPlus11\Effects\IAuxDataEffectBGRA.cs" />
+    <Compile Include="GDIPlus11\Effects\ILegacyEffect.cs" />
+    <Compile Include="GDIPlus11\EffectsInternal\ILegacyEffectApply.cs" />
+    <Compile Include="GDIPlus11\Effects\LegacyEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\LUTTablesLegacyAuxDataEffectLSHA.cs" />
+    <Compile Include="GDIPlus11\Effects\LUTTablesAuxDataEffectLSHA.cs" />
+    <Compile Include="GDIPlus11\Effects\LUTTablesAuxDataEffectBGRA.cs" />
+    <Compile Include="GDIPlus11\Effects\LUTTablesLegacyAuxDataEffectBGRA.cs" />
+    <Compile Include="GDIPlus11\Effects\LUTTablesLegacyAuxDataEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\CurveAdjustment.cs" />
+    <Compile Include="GDIPlus11\Effects\CurveAdjustmentExtensions.cs" />
+    <Compile Include="GDIPlus11\EffectsInternal\CurveAdjustmentValueRangeAttribute.cs" />
+    <Compile Include="GDIPlus11\Effects\CurveChannel.cs" />
+    <Compile Include="GDIPlus11\Effects\Effect.cs" />
+    <Compile Include="GDIPlus11\Effects\EffectValidateException.cs" />
+    <Compile Include="GDIPlus11\Effects\GraphicsExtensions.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\HueSaturationLightnessEffect.cs" />
+    <Compile Include="GDIPlus11\EffectsInternal\IAuxDataEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\LevelsEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\LUTTablesAuxDataEffect.cs" />
+    <Compile Include="GDIPlus11\EffectsInternal\BezierCurve.cs" />
+    <Compile Include="GDIPlus11\EffectsInternal\HSLColor.cs" />
+    <Compile Include="GDIPlus11\EffectsInternal\HSLColorConverter.cs" />
+    <Compile Include="GDIPlus11\EffectsInternal\LegacyBitmapBlur.cs" />
+    <Compile Include="GDIPlus11\Internal\BitmapPerPixelProcessing.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\RedEyeCorrectionEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\SharpenEffect.cs" />
+    <Compile Include="GDIPlus11\Effects\Effects\TintEffect.cs" />
+    <Compile Include="GDIPlus11\GDIPlus11NotAvailableException.cs" />
+    <Compile Include="GDIPlus11\HistogramFormat.cs" />
+    <Compile Include="GDIPlus11\Internal\HistogramFormatChannelCountAttribute.cs" />
+    <Compile Include="GDIPlus11\HistogramFormatExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\ImageAttributesExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\ImageExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\IntPtrExtensions.cs" />
+    <Compile Include="GDIPlus10\Internal\MatrixExtensions.cs" />
+    <Compile Include="GDIPlus11\Internal\Interop11.cs" />
+    <Compile Include="GDIPlus11\EffectsInternal\LegacyBitmapSharpen.cs" />
+    <Compile Include="Info.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
