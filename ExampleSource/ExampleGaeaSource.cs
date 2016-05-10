@@ -4,14 +4,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
-using System;
 
 namespace ExampleSource
 {
 	public class ExampleGaeaSource : ISource
 	{
-		public const string NAME = "ExampleSource.ExampleGaeaSource";
-
 		// Keep state here
 		private int currentIndex;
 
@@ -19,14 +16,6 @@ namespace ExampleSource
 		private List<GaeaImage> images;
 
 		#region ISource implementation
-
-		public string Name
-		{
-			get
-			{
-				return NAME;
-			}
-		}
 
 		public string DisplayName
 		{

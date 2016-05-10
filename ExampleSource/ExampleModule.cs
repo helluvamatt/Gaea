@@ -1,17 +1,16 @@
 ﻿using Gaea.Api;
 using Prism.Modularity;
-using Microsoft.Practices.Unity;
 
 namespace ExampleSource
 {
 	[Module]
 	public class ExampleModule : BaseSourceModule
 	{
-		public ExampleModule(IUnityContainer container) : base(container) { }
+		public ExampleModule(ISourceRegistry registry) : base(registry) { }
 
 		protected override void RegisterSource()
 		{
-			Container.RegisterType<ISource, ExampleGaeaSource>(ExampleGaeaSource.NAME);
+			Registry.Register(new ExampleGaeaSource());
 		}
 	}
 }

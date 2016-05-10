@@ -1,21 +1,19 @@
-﻿using Microsoft.Practices.Unity;
-using Prism.Modularity;
-using Prism.Regions;
+﻿using Prism.Modularity;
 
 namespace Gaea.Api
 {
 	public abstract class BaseSourceModule : IModule
 	{
-		protected IUnityContainer Container { get; private set; }
+		protected ISourceRegistry Registry { get; private set; }
 
-		public BaseSourceModule(IUnityContainer container)
+		public BaseSourceModule(ISourceRegistry registry)
 		{
-			Container = container;
+			Registry = registry;
 		}
 
 		public void Initialize()
 		{
-			// Register source type with IUnityContainer
+			// Register source type
 			RegisterSource();
 		}
 

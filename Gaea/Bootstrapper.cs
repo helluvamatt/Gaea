@@ -12,6 +12,7 @@ using Prism.Modularity;
 using Prism.Commands;
 using Prism.Logging;
 using Gaea.UI.ViewModels;
+using Gaea.Api;
 
 namespace Gaea
 {
@@ -65,6 +66,7 @@ namespace Gaea
 			Container.RegisterType<IConfiguration, RegistryConfiguration>(new ContainerControlledLifetimeManager());
 			Container.RegisterType<IImageManager, FileCacheImageManager>(new ContainerControlledLifetimeManager());
 			Container.RegisterType<IImageProcessor, GdiPlusImageProcessor>(new ContainerControlledLifetimeManager());
+			Container.RegisterType<ISourceRegistry, SourceRegistry>(new ContainerControlledLifetimeManager());
 
 			Container.RegisterType<LogWindowViewModel>();
 			Container.RegisterType<LogWindow>();

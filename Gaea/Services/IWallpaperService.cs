@@ -1,13 +1,12 @@
-﻿using Gaea.Api;
-using Gaea.Services.Data;
+﻿using Gaea.Services.Data;
+using Gaea.UI.Domain;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Input;
 
 namespace Gaea.Services
 {
-	public interface IWallpaperService : IDisposable
+	internal interface IWallpaperService : IDisposable
 	{
 		void Initialize();
 		void NextWallpaper();
@@ -15,8 +14,8 @@ namespace Gaea.Services
 
 		ICommand NextWallpaperCommand { get; }
 		ICommand OpenWallpaperLinkCommand { get; }
-		IEnumerable<ISource> Sources { get; }
-		ISource SelectedSource { get; set; }
+		IEnumerable<SourceItem> Sources { get; }
+		string SelectedSource { get; set; }
 		bool CanConfigureSource { get; }
 
 		event EventHandler<PostProcessCompletedEventArgs> PostProcessComplete;

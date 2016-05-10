@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gaea.Api;
+using System;
 using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -92,6 +93,17 @@ namespace Gaea
 			float offsetX = Math.Max(0, (containerSize.Width - finalWidth) / 2);
 			float offsetY = Math.Max(0, (containerSize.Height - finalHeight) / 2);
 			return new RectangleF { Width = finalWidth, Height = finalHeight, X = offsetX, Y = offsetY };
+		}
+
+		/// <summary>
+		/// Get the name of a source
+		/// </summary>
+		/// <param name="source">The source</param>
+		/// <returns>Name of the source</returns>
+		public static string GetName(this ISource source)
+		{
+			if (source == null) return null;
+			return source.GetType().FullName;
 		}
 	}
 

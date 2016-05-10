@@ -5,10 +5,20 @@ using System.Threading;
 
 namespace Gaea.Api
 {
-    public interface ISource : IDisposable
-    {
-		string Name { get; }
+	/// <summary>
+	/// Registry for sources. Passed to Modules/Plugins so they can register sources.
+	/// </summary>
+	public interface ISourceRegistry
+	{
+		/// <summary>
+		/// Register a source with the application
+		/// </summary>
+		/// <param name="sourceMeta">Instance of the source, this instance will be persisted while the application is alive and reused.</param>
+		void Register(ISource sourceMeta);
+	}
 
+	public interface ISource : IDisposable
+	{
 		/// <summary>
 		/// Display name for the source
 		/// </summary>

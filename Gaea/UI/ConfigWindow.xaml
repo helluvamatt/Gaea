@@ -68,7 +68,8 @@
 					Grid.Column="0"
 					Margin="8" HorizontalAlignment="Stretch"
 					ItemsSource="{Binding WallpaperService.Sources}"
-					SelectedItem="{Binding WallpaperService.SelectedSource}">
+					SelectedValuePath="Name"
+					SelectedValue="{Binding WallpaperService.SelectedSource, Mode=TwoWay}">
 					<ComboBox.ItemTemplate>
 						<DataTemplate>
 							<Grid Margin="7">

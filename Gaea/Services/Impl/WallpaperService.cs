@@ -1,5 +1,4 @@
 ﻿using Gaea.Api;
-using Gaea.Api.Configuration;
 using Gaea.Api.Data;
 using Gaea.Services.Data;
 using Microsoft.Practices.Unity;
@@ -13,13 +12,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Windows.Input;
 
 namespace Gaea.Services.Impl
 {
-	public class WallpaperService : BindableBase, IWallpaperService
+	internal class WallpaperService : BindableBase, IWallpaperService
 	{
 		#region Private members
 
@@ -85,8 +83,8 @@ namespace Gaea.Services.Impl
 			}
 		}
 
-		private IEnumerable<ISource> _Sources;
-		public IEnumerable<ISource> Sources
+		private IEnumerable<SourceItem> _Sources;
+		public IEnumerable<SourceItem> Sources
 		{
 			get
 			{
@@ -99,11 +97,11 @@ namespace Gaea.Services.Impl
 		}
 
 		private ISource _CurrentSource;
-		public ISource SelectedSource
+		public string SelectedSource
 		{
 			get
 			{
-				return _CurrentSource;
+				return _CurrentSource.GetName();
 			}
 			set
 			{
@@ -162,7 +160,13 @@ namespace Gaea.Services.Impl
 		{
 			if (e.Error == null)
 			{
-				Sources = _Container.ResolveAll<ISource>();
+				var sources = _Container.ResolveAll<ISource>();
+				var items = new List<SourceItem>();
+				foreach (var source in sources)
+				{
+					items.Add(new SourceItem { Name = source.GetName(), DisplayName = source.DisplayName, Description = source.Description, Icon = source.Icon });
+				}
+				Sources = items;
 			}
 		}
 
@@ -214,7 +218,7 @@ namespace Gaea.Services.Impl
 			if (_CurrentSource != null)
 			{
 				// Set configuration and initialize
-				_Configuration.CurrentSource = _CurrentSource.Name;
+				_Configuration.CurrentSource = _CurrentSource.GetName();
 				_Configuration.BuildModelFromAttributes(_CurrentSource.Configuration);
 				CanConfigureSource =
 					_Configuration.CurrentSourceConfigurationMetaModel != null ?
@@ -251,7 +255,10 @@ namespace Gaea.Services.Impl
 						{
 							var initialImage = _Configuration.CurrentImage;
 							initialImage.Source = _CurrentSource;
-							initialImage.Image = new Bitmap(Image.FromFile(initialImage.RawCacheUrl));
+							if (initialImage.RawCacheUrl != null)
+							{
+								initialImage.Image = new Bitmap(Image.FromFile(initialImage.RawCacheUrl));
+							}
 							_Configuration.CurrentImage = initialImage;
 						}
 						catch (Exception ex)
