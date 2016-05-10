@@ -170,6 +170,8 @@
     <Compile Include="UI\Domain\LogEntry.cs" />
     <Compile Include="UI\Domain\GlobalCommands.cs" />
     <Compile Include="Services\Data\SourceItem.cs" />
+    <Compile Include="UI\Domain\SourceConfigItem.cs" />
+    <Compile Include="UI\Domain\SourceConfigTemplateSelector.cs" />
     <Compile Include="UI\LogWindow.xaml.cs">
       <DependentUpon>LogWindow.xaml</DependentUpon>
     </Compile>

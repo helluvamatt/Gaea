@@ -13,7 +13,7 @@ namespace Gaea.UI.ViewModels
 
 		private IUnityContainer _Container;
 
-		public TrayIconViewModel(ILocalizationService l10nService, IUnityContainer container, IWallpaperService wallpaperService, IEventAggregator eventAggregator) : base(l10nService)
+		public TrayIconViewModel(IUnityContainer container, IWallpaperService wallpaperService, IEventAggregator eventAggregator)
 		{
 			_Container = container;
 			WallpaperService = wallpaperService;

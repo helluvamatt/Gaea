@@ -10,7 +10,7 @@ namespace Gaea.UI.ViewModels
 	{
 		private IEventAggregator _EventAggregator;
 
-		public LogWindowViewModel(ILocalizationService l10nService, IEventAggregator eventAggregator) : base(l10nService)
+		public LogWindowViewModel(IEventAggregator eventAggregator)
 		{
 			LogEntries = new ObservableCollection<LogEntry>();
 			_EventAggregator = eventAggregator;

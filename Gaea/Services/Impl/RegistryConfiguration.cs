@@ -42,6 +42,8 @@ namespace Gaea.Services.Impl
 			_Logger = logger;
 			_Logger.Info("Initializing RegistryConfiguration...");
 
+			CurrentSourceConfigurationMetaModel = new ConfigurationMetaModel();
+
 			using (RegistryKey appKey = GetApplicationBaseKey())
 			{
 				_CurrentSource = (string)appKey.GetValue(REGNAME_CURRENT_SOURCE);
@@ -111,7 +113,8 @@ namespace Gaea.Services.Impl
 
 		public void BuildModelFromAttributes(object configObject)
 		{
-			ConfigurationMetaModel model = new ConfigurationMetaModel();
+			CurrentSourceConfigurationMetaModel.Data.Clear();
+			if (configObject == null) return;
 			Type configType = configObject.GetType();
 			PropertyInfo[] props = configType.GetProperties();
 			foreach (PropertyInfo prop in props)
@@ -119,11 +122,9 @@ namespace Gaea.Services.Impl
 				var attr = prop.GetCustomAttribute<ConfigurationItemAttribute>();
 				if (attr != null)
 				{
-					model.Items.Add(prop, attr);
+					CurrentSourceConfigurationMetaModel.Data.Add(prop, attr);
 				}
 			}
-
-			CurrentSourceConfigurationMetaModel = model;
 		}
 
 		#endregion

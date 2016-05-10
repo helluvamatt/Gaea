@@ -18,6 +18,11 @@ namespace Gaea.Api.Configuration
 		/// Displayed label for the item
 		/// </summary>
 		public string DisplayLabel { get; set; }
+
+		/// <summary>
+		/// Index used for ordering configuration items in the UI. You can ignore this and the properties will be sorted by DisplayLabel.
+		/// </summary>
+		public int Order { get; set; }
 	}
 
 	/// <summary>
@@ -129,6 +134,20 @@ namespace Gaea.Api.Configuration
 			/// </summary>
 			public string DisplayLabel { get; set; }
 		}
+	}
+
+	/// <summary>
+	/// Configuration item represented as a list of check boxes and (optionally) a place to write in options
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Property)]
+	public class MultiChoiceConfigurationItemAttribute : ChoiceConfigurationItemAttribute
+	{
+		public MultiChoiceConfigurationItemAttribute(string displayLabel) : base(displayLabel) { }
+
+		/// <summary>
+		/// Allows the user to "write in" choices.
+		/// </summary>
+		public bool AllowOtherChoices { get; set; }
 	}
 
 }

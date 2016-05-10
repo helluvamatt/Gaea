@@ -15,6 +15,8 @@ namespace ExampleSource
 		// This example is just a static list of embedded images, but the asynchrounous 
 		private List<GaeaImage> images;
 
+		private ExampleSourceConfig _Configuration = new ExampleSourceConfig() { SkipThirdImage = false, FetchDelayMs = 0 };
+
 		#region ISource implementation
 
 		public string DisplayName
@@ -45,7 +47,7 @@ namespace ExampleSource
 		{
 			get
 			{
-				return new ExampleSourceConfig();
+				return _Configuration;
 			}
 		}
 
@@ -91,6 +93,9 @@ namespace ExampleSource
 		public void Configure(object configuration)
 		{
 			// Configure the source given the configuration object
+			_Configuration = (ExampleSourceConfig)configuration;
+
+			// Gaea will generally call BeginFetchNext(...) immediately after calling this
 		}
 
 		public void Dispose()

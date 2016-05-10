@@ -30,6 +30,8 @@ namespace Gaea.Services.Impl
 		private IEventAggregator _EventAggregator;
 		private IImageManager _ImageManager;
 
+		private ISource _CurrentSource;
+
 		private Thread wallpaperServiceThread;
 		private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 		private CancellationTokenSource fetchCancelTokenSource = new CancellationTokenSource();
@@ -96,7 +98,6 @@ namespace Gaea.Services.Impl
 			}
 		}
 
-		private ISource _CurrentSource;
 		public string SelectedSource
 		{
 			get
@@ -106,6 +107,14 @@ namespace Gaea.Services.Impl
 			set
 			{
 				InitializeCurrentSource(value);
+			}
+		}
+
+		public ISource CurrentSource
+		{
+			get
+			{
+				return _CurrentSource;
 			}
 		}
 

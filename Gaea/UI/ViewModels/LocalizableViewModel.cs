@@ -1,15 +1,15 @@
 ﻿using Gaea.Api.Infrastructure;
 using Gaea.Services;
+using Microsoft.Practices.Unity;
 
 namespace Gaea.UI.ViewModels
 {
 	internal class LocalizableViewModel : DisposableAwareBindableBase
 	{
-		public LocalizableViewModel(ILocalizationService l10nService)
-		{
-			LocalizationService = l10nService;
-		}
+		[Dependency]
+		public ILocalizationService LocalizationService { get; set; }
 
-		public ILocalizationService LocalizationService { get; private set; }
+		[Dependency]
+		public IUnityContainer Container { get; set; }
 	}
 }

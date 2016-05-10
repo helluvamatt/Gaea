@@ -1,6 +1,9 @@
 ﻿using Gaea.Services;
+using Prism.Commands;
 using System.Drawing;
 using System.Windows;
+using System.Windows.Input;
+using Microsoft.Practices.Unity;
 
 namespace Gaea.UI.ViewModels
 {
@@ -27,7 +30,7 @@ namespace Gaea.UI.ViewModels
 
 		#endregion
 
-		public ConfigWindowViewModel(ILocalizationService l10nService, IConfiguration configuration, IWallpaperService wallpaperService) : base(l10nService)
+		public ConfigWindowViewModel(IConfiguration configuration, IWallpaperService wallpaperService)
 		{
 			Configuration = configuration;
 			WallpaperService = wallpaperService;
@@ -39,6 +42,20 @@ namespace Gaea.UI.ViewModels
 			Application.Current.Dispatcher.Invoke(() => {
 				PreviewImage = e.Image.ProcessedImage;
 			});
+		}
+
+		public ICommand SourceConfigurationCommand
+		{
+			get
+			{
+				return new DelegateCommand(DoSourceConfiguration);
+			}
+		}
+
+		private void DoSourceConfiguration()
+		{
+			var sourceConfigWindow = Container.Resolve<SourceConfigWindow>();
+			sourceConfigWindow.ShowDialog();
 		}
 	}
 }

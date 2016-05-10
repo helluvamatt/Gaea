@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 
 namespace Gaea.Api.Configuration
@@ -9,21 +8,18 @@ namespace Gaea.Api.Configuration
 	/// </summary>
 	public class ConfigurationMetaModel
 	{
-		/// <summary>
-		/// List of configuration items
-		/// </summary>
-		public Dictionary<PropertyInfo, ConfigurationItemAttribute> Items { get; private set; }
+		public Dictionary<PropertyInfo, ConfigurationItemAttribute> Data { get; private set; }
 
 		public ConfigurationMetaModel()
 		{
-			Items = new Dictionary<PropertyInfo, ConfigurationItemAttribute>();
+			Data = new Dictionary<PropertyInfo, ConfigurationItemAttribute>();
 		}
 
 		public bool CanConfigureSource
 		{
 			get
 			{
-				return Items.Count > 0;
+				return Data.Count > 0;
 			}
 		}
 	}

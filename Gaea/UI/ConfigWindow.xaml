@@ -92,7 +92,7 @@
 						</DataTemplate>
 					</ComboBox.ItemTemplate>
 				</ComboBox>
-				<Button Grid.Column="1" Margin="7" Style="{DynamicResource MaterialDesignFloatingActionMiniButton}" IsEnabled="{Binding WallpaperService.CanConfigureSource}">
+				<Button Grid.Column="1" Margin="7" Style="{DynamicResource MaterialDesignFloatingActionMiniButton}" IsEnabled="{Binding WallpaperService.CanConfigureSource}" Command="{Binding SourceConfigurationCommand }">
 					<md:PackIcon Kind="Settings" Height="16" Width="16" />
 				</Button>
 			</Grid>

@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gaea.UI"
+		xmlns:domain="clr-namespace:Gaea.UI.Domain"
         mc:Ignorable="d"
         Title="Source Configuration" Height="300" Width="300" Icon="{DynamicResource appIcon}">
 	<Window.Resources>
@@ -13,9 +14,31 @@
 				<ResourceDictionary Source="Styles.xaml" />
 				<ResourceDictionary Source="MaterialStyle.xaml" />
 			</ResourceDictionary.MergedDictionaries>
+			<DataTemplate x:Key="SwitchDataTemplate">
+				<ToggleButton Style="{DynamicResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding Path=Value}" />
+			</DataTemplate>
+			<DataTemplate x:Key="StringDataTemplate"></DataTemplate>
+			<DataTemplate x:Key="IntegerDataTemplate"></DataTemplate>
+			<DataTemplate x:Key="IntegerRangeDataTemplate"></DataTemplate>
+			<DataTemplate x:Key="ChoiceDataTemplate"></DataTemplate>
+			<DataTemplate x:Key="MultiChoiceDataTemplate"></DataTemplate>
+			<domain:SourceConfigTemplateSelector x:Key="templateSelector" />
 		</ResourceDictionary>
 	</Window.Resources>
 	<Grid Background="{DynamicResource MaterialDesignPaper}">
-		
+		<ListView ItemsSource="{Binding Path=ItemsModel}" >
+			<ListView.View>
+				<GridView>
+					<GridViewColumn>
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Path=DisplayLabel}" />
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					<GridViewColumn CellTemplateSelector="{ StaticResource templateSelector }" />
+				</GridView>
+			</ListView.View>
+		</ListView>
 	</Grid>
 </Window>
