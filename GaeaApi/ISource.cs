@@ -61,11 +61,6 @@ namespace Gaea.Api
 		void BeginFetchNext(CancellationToken cancelToken);
 
 		/// <summary>
-		/// Attempt to cancel the currently running fetch
-		/// </summary>
-		void CancelFetch();
-
-		/// <summary>
 		/// The next image has been fetched and is ready to display
 		/// </summary>
 		event FetchNextCompleteHandler FetchNextComplete;

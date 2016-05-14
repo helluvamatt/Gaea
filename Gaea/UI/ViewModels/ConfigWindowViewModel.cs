@@ -12,7 +12,7 @@ namespace Gaea.UI.ViewModels
 
 		#region Properties
 
-		public IConfiguration Configuration { get; private set; }
+		public IConfigurationService Configuration { get; private set; }
 		public IWallpaperService WallpaperService { get; private set; }
 
 		private Bitmap _PreviewImage;
@@ -30,7 +30,7 @@ namespace Gaea.UI.ViewModels
 
 		#endregion
 
-		public ConfigWindowViewModel(IConfiguration configuration, IWallpaperService wallpaperService)
+		public ConfigWindowViewModel(IConfigurationService configuration, IWallpaperService wallpaperService)
 		{
 			Configuration = configuration;
 			WallpaperService = wallpaperService;

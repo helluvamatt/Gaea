@@ -63,7 +63,7 @@ namespace Gaea
 
 			Container.RegisterType<ILocalizationService, DummyLocalizationService>(new ContainerControlledLifetimeManager());
 			Container.RegisterType<IWallpaperService, WallpaperService>(new ContainerControlledLifetimeManager());
-			Container.RegisterType<IConfiguration, RegistryConfiguration>(new ContainerControlledLifetimeManager());
+			Container.RegisterType<IConfigurationService, ConfigurationService>(new ContainerControlledLifetimeManager());
 			Container.RegisterType<IImageManager, FileCacheImageManager>(new ContainerControlledLifetimeManager());
 			Container.RegisterType<IImageProcessor, GdiPlusImageProcessor>(new ContainerControlledLifetimeManager());
 			Container.RegisterType<ISourceRegistry, SourceRegistry>(new ContainerControlledLifetimeManager());

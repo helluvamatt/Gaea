@@ -1,23 +1,27 @@
 ﻿using Gaea.Services;
+using Gaea.Services.Data;
 using Gaea.UI.Domain;
+using Prism.Commands;
 using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace Gaea.UI.ViewModels
 {
 	internal class SourceConfigWindowViewModel : LocalizableViewModel
 	{
-		public SourceConfigWindowViewModel(IWallpaperService wallpaperService, IConfiguration configService)
+		public SourceConfigWindowViewModel(ILoggingService loggingService, IWallpaperService wallpaperService, IConfigurationService configService)
 		{
+			LoggingService = loggingService;
 			ConfigService = configService;
 			WallpaperService = wallpaperService;
 
 			object configObj = WallpaperService.CurrentSource.Configuration;
+			Type objType = configObj.GetType();
 			List<SourceConfigItem> itemsModel = new List<SourceConfigItem>();
-			foreach (var kvp in ConfigService.CurrentSourceConfigurationMetaModel.Data)
+			foreach (var kvp in WallpaperService.CurrentSourceConfigurationMetaModel.Data)
 			{
 				string name = kvp.Key.Name;
-				Type objType = configObj.GetType();
 				SourceConfigItem item = new SourceConfigItem();
 				item.Attribute = kvp.Value;
 				item.Name = name;
@@ -26,13 +30,56 @@ namespace Gaea.UI.ViewModels
 			}
 			itemsModel.Sort();
 			ItemsModel = itemsModel;
+
+			AcceptCommand = new DelegateCommand(Accept);
 		}
 
-		public IConfiguration ConfigService { get; private set; }
+		public ILoggingService LoggingService { get; private set; }
+		public IConfigurationService ConfigService { get; private set; }
 		public IWallpaperService WallpaperService { get; private set; }
 
 		public IEnumerable<SourceConfigItem> ItemsModel { get; private set; }
 
-		// TODO Need a way to save configs and pass them back to the source and the ConfigService to be persisted
+		public ICommand AcceptCommand { get; private set; }
+
+		public event EventHandler<DismissDialogEventArgs> DismissDialog;
+		private void RaiseDismissDialog(bool result)
+		{
+			if (DismissDialog != null)
+			{
+				DismissDialog(this, new DismissDialogEventArgs { Result = result });
+			}
+		}
+
+		private void Accept()
+		{
+			if (WallpaperService == null || WallpaperService.CurrentSource == null) throw new ArgumentNullException("WallpaperService.CurrentSource");
+
+			var configObj = WallpaperService.CurrentSource.Configuration;
+
+			try
+			{
+				// Validate the model and copy properties back to the configObj
+				ConfigService.PersistModel(ItemsModel, configObj);
+			}
+			catch (Exception ex) // TODO Exception type for validation?
+			{
+				LoggingService.Exception(ex, "Exception caught from PersistModel: {0}", ex.Message);
+				// TODO Handle validation errors on the model
+			}
+
+			try
+			{
+				// Inform the WallpaperService that we need to configure the source
+				WallpaperService.ConfigureCurrentSource(configObj);
+			}
+			catch (Exception ex)
+			{
+				LoggingService.Exception(ex, "Exception caught from ConfigureCurrentSource: {0}", ex.Message);
+				// TODO Handle error: "There was a problem configuring the source: <message>"
+			}
+
+			RaiseDismissDialog(true);
+		}
 	}
 }

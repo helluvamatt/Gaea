@@ -1,7 +1,7 @@
 ﻿using Gaea.Api.Configuration;
 using System;
 
-namespace Gaea.UI.Domain
+namespace Gaea.Services.Data
 {
 	internal class SourceConfigItem : IComparable
 	{

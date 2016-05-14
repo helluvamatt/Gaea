@@ -3,56 +3,64 @@ using Prism.Mvvm;
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Gaea.Api.Data;
 using Newtonsoft.Json;
 using System.Drawing;
 using Gaea.Api.Configuration;
-using Gaea.Api;
+using System.Collections.Generic;
+using Gaea.Services.Data;
 
 namespace Gaea.Services.Impl
 {
-	public class RegistryConfiguration : BindableBase, IConfiguration
+	internal class ConfigurationService : BindableBase, IConfigurationService
 	{
 		#region Constants
 
-		public const string REGNAME_CURRENT_SOURCE = "CurrentSource"; // SZ
-		public const string REGNAME_CURRENT_IMAGE = "CurrentImage"; // SZ
-		public const string REGNAME_LAST_UPDATED = "LastUpdated"; // DWORD
-		public const string REGNAME_BLUR = "Blur"; // DWORD
-		public const string REGNAME_DARKEN = "Darken"; // DWORD
-		public const string REGNAME_DESATURATE = "Desaturate"; // DWORD
-		public const string REGNAME_OPTIMIZE_LAYOUT = "OptimizeLayout"; // DWORD 0x0 or 0x1
+		public const string NAME_CURRENT_SOURCE = "CurrentSource"; // SZ
+		public const string NAME_CURRENT_IMAGE = "CurrentImage"; // SZ
+		public const string NAME_LAST_UPDATED = "LastUpdated"; // DWORD
+		public const string NAME_BLUR = "Blur"; // DWORD
+		public const string NAME_DARKEN = "Darken"; // DWORD
+		public const string NAME_DESATURATE = "Desaturate"; // DWORD
+		public const string NAME_OPTIMIZE_LAYOUT = "OptimizeLayout"; // DWORD 0x0 or 0x1
+
+		private const string NAME_SOURCE_CONFIG = "Config"; // SZ
 
 		public const int DEFAULT_BLUR = 128;
 		public const int DEFAULT_DARKEN = 0;
 		public const int DEFAULT_DESATURATE = 0;
 		public const int DEFAULT_CACHE_COUNT = 1;
 
-		private const string REGKEY_APPLICATION = "\\Software\\";
+		private const string REGKEY_APPLICATION = "Software";
 
 		private const string REGKEY_CURRENT_USER_RUN = "Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+
+		private const string REGKEY_SOURCE_CONFIGS = "SourceConfigs";
+
+		#endregion
+
+		#region Private members
 
 		private ILoggingService _Logger;
 
 		#endregion
 
-		public RegistryConfiguration(ILoggingService logger)
+		public ConfigurationService(ILoggingService logger)
 		{
 			_Logger = logger;
-			_Logger.Info("Initializing RegistryConfiguration...");
-
-			CurrentSourceConfigurationMetaModel = new ConfigurationMetaModel();
+			_Logger.Info("Initializing ConfigurationService...");
 
 			using (RegistryKey appKey = GetApplicationBaseKey())
 			{
-				_CurrentSource = (string)appKey.GetValue(REGNAME_CURRENT_SOURCE);
-				var currentImageJson = (string)appKey.GetValue(REGNAME_CURRENT_IMAGE);
+				_CurrentSource = (string)appKey.GetValue(NAME_CURRENT_SOURCE);
+				var currentImageJson = (string)appKey.GetValue(NAME_CURRENT_IMAGE);
 				if (currentImageJson != null)
 				{
 					_CurrentImage = JsonConvert.DeserializeObject<GaeaImage>(currentImageJson);
 				}
-				string lastUpdateStr = (string)appKey.GetValue(REGNAME_LAST_UPDATED);
+				string lastUpdateStr = (string)appKey.GetValue(NAME_LAST_UPDATED);
 				if (lastUpdateStr != null)
 				{
 					_LastUpdate = DateTime.Parse(lastUpdateStr);
@@ -61,10 +69,10 @@ namespace Gaea.Services.Impl
 				{
 					_LastUpdate = DateTime.MinValue;
 				}
-				_Blur = (int)appKey.GetValue(REGNAME_BLUR, DEFAULT_BLUR);
-				_Darken = (int)appKey.GetValue(REGNAME_DARKEN, DEFAULT_DARKEN);
-				_Desaturate = (int)appKey.GetValue(REGNAME_DESATURATE, DEFAULT_DESATURATE);
-				_OptimizeLayout = (int)appKey.GetValue(REGNAME_OPTIMIZE_LAYOUT, 1) == 1;
+				_Blur = (int)appKey.GetValue(NAME_BLUR, DEFAULT_BLUR);
+				_Darken = (int)appKey.GetValue(NAME_DARKEN, DEFAULT_DARKEN);
+				_Desaturate = (int)appKey.GetValue(NAME_DESATURATE, DEFAULT_DESATURATE);
+				_OptimizeLayout = (int)appKey.GetValue(NAME_OPTIMIZE_LAYOUT, 1) == 1;
 			}
 
 			PropertyChanged += RegistryConfiguration_PropertyChanged;
@@ -78,30 +86,30 @@ namespace Gaea.Services.Impl
 			{
 				switch (e.PropertyName)
 				{
-					case REGNAME_BLUR:
-						appKey.SetValue(REGNAME_BLUR, _Blur, RegistryValueKind.DWord);
+					case NAME_BLUR:
+						appKey.SetValue(NAME_BLUR, _Blur, RegistryValueKind.DWord);
 						RaiseConfigurationChanged();
 						break;
-					case REGNAME_DARKEN:
-						appKey.SetValue(REGNAME_DARKEN, _Darken, RegistryValueKind.DWord);
+					case NAME_DARKEN:
+						appKey.SetValue(NAME_DARKEN, _Darken, RegistryValueKind.DWord);
 						RaiseConfigurationChanged();
 						break;
-					case REGNAME_DESATURATE:
-						appKey.SetValue(REGNAME_DESATURATE, _Desaturate, RegistryValueKind.DWord);
+					case NAME_DESATURATE:
+						appKey.SetValue(NAME_DESATURATE, _Desaturate, RegistryValueKind.DWord);
 						RaiseConfigurationChanged();
 						break;
-					case REGNAME_OPTIMIZE_LAYOUT:
-						appKey.SetValue(REGNAME_OPTIMIZE_LAYOUT, _OptimizeLayout ? 1 : 0, RegistryValueKind.DWord);
+					case NAME_OPTIMIZE_LAYOUT:
+						appKey.SetValue(NAME_OPTIMIZE_LAYOUT, _OptimizeLayout ? 1 : 0, RegistryValueKind.DWord);
 						RaiseConfigurationChanged();
 						break;
-					case REGNAME_CURRENT_SOURCE:
-						appKey.SetValue(REGNAME_CURRENT_SOURCE, _CurrentSource, RegistryValueKind.String);
+					case NAME_CURRENT_SOURCE:
+						appKey.SetValue(NAME_CURRENT_SOURCE, _CurrentSource, RegistryValueKind.String);
 						break;
-					case REGNAME_CURRENT_IMAGE:
-						appKey.SetValue(REGNAME_CURRENT_IMAGE, JsonConvert.SerializeObject(_CurrentImage), RegistryValueKind.String);
+					case NAME_CURRENT_IMAGE:
+						appKey.SetValue(NAME_CURRENT_IMAGE, JsonConvert.SerializeObject(_CurrentImage), RegistryValueKind.String);
 						break;
-					case REGNAME_LAST_UPDATED:
-						appKey.SetValue(REGNAME_LAST_UPDATED, string.Format("{0:O}", _LastUpdate), RegistryValueKind.String);
+					case NAME_LAST_UPDATED:
+						appKey.SetValue(NAME_LAST_UPDATED, string.Format("{0:O}", _LastUpdate), RegistryValueKind.String);
 						break;
 				}
 			}
@@ -111,10 +119,10 @@ namespace Gaea.Services.Impl
 
 		#region Public methods
 
-		public void BuildModelFromAttributes(object configObject)
+		public ConfigurationMetaModel BuildModelFromAttributes(object configObject)
 		{
-			CurrentSourceConfigurationMetaModel.Data.Clear();
-			if (configObject == null) return;
+			ConfigurationMetaModel model = new ConfigurationMetaModel();
+			if (configObject == null) return model;
 			Type configType = configObject.GetType();
 			PropertyInfo[] props = configType.GetProperties();
 			foreach (PropertyInfo prop in props)
@@ -122,9 +130,70 @@ namespace Gaea.Services.Impl
 				var attr = prop.GetCustomAttribute<ConfigurationItemAttribute>();
 				if (attr != null)
 				{
-					CurrentSourceConfigurationMetaModel.Data.Add(prop, attr);
+					if (attr.AllowedTypes.Contains(prop.PropertyType))
+					{
+						model.Data.Add(prop, attr);
+					}
+					else
+					{
+						throw new TypeNotAllowedException();
+					}
 				}
 			}
+			return model;
+		}
+
+		public void PersistModel(IEnumerable<SourceConfigItem> model, object configObject)
+		{
+			// Use reflection to copy values back to the config object
+			Type objType = configObject.GetType();
+			foreach (var item in model)
+			{
+				PropertyInfo prop = objType.GetProperty(item.Name);
+				object value = item.Value;
+				if (item.Value.GetType() != prop.PropertyType)
+				{
+					value = TypeDescriptor.GetProperties(configObject)[item.Name].Converter.ConvertTo(value, prop.PropertyType);
+				}
+				prop.SetValue(configObject, value);
+			}
+		}
+
+		public void WriteCurrentSourceConfiguration(object configObject)
+		{
+			if (!string.IsNullOrEmpty(CurrentSource))
+			{
+				using (var appKey = GetApplicationBaseKey())
+				{
+					using (var sourcesKey = appKey.CreateSubKey(REGKEY_SOURCE_CONFIGS))
+					{
+						using (var sourceKey = sourcesKey.CreateSubKey(CurrentSource))
+						{
+							string serialized = JsonConvert.SerializeObject(configObject, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+							sourceKey.SetValue(NAME_SOURCE_CONFIG, serialized, RegistryValueKind.String);
+						}
+					}
+				}
+			}
+		}
+
+		public object GetCurrentSourceConfiguration()
+		{
+			if (!string.IsNullOrEmpty(CurrentSource))
+			{
+				using (var appKey = GetApplicationBaseKey())
+				{
+					using (var sourcesKey = appKey.CreateSubKey(REGKEY_SOURCE_CONFIGS))
+					{
+						using (var sourceKey = sourcesKey.CreateSubKey(CurrentSource))
+						{
+							string serialized = (string)sourceKey.GetValue(NAME_SOURCE_CONFIG);
+							return JsonConvert.DeserializeObject(serialized, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+						}
+					}
+				}
+			}
+			return null;
 		}
 
 		#endregion
@@ -202,7 +271,7 @@ namespace Gaea.Services.Impl
 
 		private RegistryKey GetApplicationBaseKey()
 		{
-			string key = Registry.CurrentUser.Name + REGKEY_APPLICATION + CompanyName + "\\" + ProductName;
+			string key = REGKEY_APPLICATION + "\\" + CompanyName + "\\" + ProductName;
 			return RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default).CreateSubKey(key);
 		}
 
@@ -344,8 +413,6 @@ namespace Gaea.Services.Impl
 				return screenBounds;
 			}
 		}
-
-		public ConfigurationMetaModel CurrentSourceConfigurationMetaModel { get; private set; }
 
 		#endregion
 

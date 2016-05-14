@@ -1,4 +1,5 @@
 ﻿using Gaea.Api;
+using Gaea.Api.Configuration;
 using Gaea.Api.Data;
 using Gaea.Services.Data;
 using Microsoft.Practices.Unity;
@@ -26,11 +27,12 @@ namespace Gaea.Services.Impl
 
 		private ILoggingService _Logger;
 		private IUnityContainer _Container;
-		private IConfiguration _Configuration;
+		private IConfigurationService _Configuration;
 		private IEventAggregator _EventAggregator;
 		private IImageManager _ImageManager;
 
 		private ISource _CurrentSource;
+		private ConfigurationMetaModel _CurrentSourceConfigurationMetaModel;
 
 		private Thread wallpaperServiceThread;
 		private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -42,7 +44,7 @@ namespace Gaea.Services.Impl
 
 		#endregion
 
-		public WallpaperService(ILoggingService logger, IUnityContainer container, IEventAggregator eventAggregator, IModuleManager moduleManager, IConfiguration configuration, IImageManager imageManager)
+		public WallpaperService(ILoggingService logger, IUnityContainer container, IEventAggregator eventAggregator, IModuleManager moduleManager, IConfigurationService configuration, IImageManager imageManager)
 		{
 			_Logger = logger;
 			_Container = container;
@@ -115,6 +117,14 @@ namespace Gaea.Services.Impl
 			get
 			{
 				return _CurrentSource;
+			}
+		}
+
+		public ConfigurationMetaModel CurrentSourceConfigurationMetaModel
+		{
+			get
+			{
+				return _CurrentSourceConfigurationMetaModel;
 			}
 		}
 
@@ -210,34 +220,68 @@ namespace Gaea.Services.Impl
 
 		private void InitializeCurrentSource(ISource newSource)
 		{
+			if (newSource == null) throw new ArgumentNullException("newSource");
+
 			// Clean up old source
 			if (_CurrentSource != null)
 			{
+				CancelPendingFetch();
+
 				_CurrentSource.Dispose();
 				_CurrentSource.FetchError -= CurrentSource_FetchError;
 				_CurrentSource.FetchNextComplete -= CurrentSource_FetchNextComplete;
+			}
+
+			ConfigurationMetaModel configModel;
+			try
+			{
+				configModel = _Configuration.BuildModelFromAttributes(newSource.Configuration);
+			}
+			catch (Exception ex)
+			{
+				_Logger.Exception(ex, "Caught exception from BuildModelFromAttributes: {0}", ex.Message);
+				// TODO Error dialog/message
+				return;
+			}
+
+			try
+			{
+				newSource.Initialize();
+			}
+			catch (Exception ex)
+			{
+				_Logger.Exception(ex, "Caught exception in Initialize: {0}", ex.Message);
+				// TODO Error dialog/message
+				return;
 			}
 
 			// Bind events to new source
 			newSource.FetchNextComplete += CurrentSource_FetchNextComplete;
 			newSource.FetchError += CurrentSource_FetchError;
 
+			// Source configuration
+			_CurrentSourceConfigurationMetaModel = configModel;
+			CanConfigureSource =
+				_CurrentSourceConfigurationMetaModel != null ?
+				_CurrentSourceConfigurationMetaModel.CanConfigureSource :
+				false;
+
 			// Set the new source
 			SetProperty(ref _CurrentSource, newSource);
-			if (_CurrentSource != null)
-			{
-				// Set configuration and initialize
-				_Configuration.CurrentSource = _CurrentSource.GetName();
-				_Configuration.BuildModelFromAttributes(_CurrentSource.Configuration);
-				CanConfigureSource =
-					_Configuration.CurrentSourceConfigurationMetaModel != null ?
-					_Configuration.CurrentSourceConfigurationMetaModel.CanConfigureSource :
-					false;
-				_CurrentSource.Initialize();
 			
-				// Immediately trigger a fetch next event
-				NextWallpaper();
-			}
+			// Save source selection to configuration service
+			_Configuration.CurrentSource = _CurrentSource.GetName();	
+			
+			// Immediately trigger a fetch next event
+			NextWallpaper();
+		}
+
+		private void CancelPendingFetch()
+		{
+			// Cancel pending fetch and reset the fetchCancelTokenSource
+			fetchCancelTokenSource.Cancel();
+			fetchCancelTokenSource.Dispose();
+			fetchCancelTokenSource = new CancellationTokenSource();
 		}
 
 		private void Error(string subject, string message)
@@ -303,6 +347,24 @@ namespace Gaea.Services.Impl
 				Process.Start(new ProcessStartInfo(_Configuration.CurrentImage.URL));
 			}
 			
+		}
+
+		public void ConfigureCurrentSource(object configuration)
+		{
+			if (CurrentSource != null)
+			{
+				// Possibly cancel pending fetch
+				CancelPendingFetch();
+
+				// Reconfigure the source
+				CurrentSource.Configure(configuration);
+
+				// Write configuration
+				_Configuration.WriteCurrentSourceConfiguration(configuration);
+
+				// Immediately schedule a new fetch
+				NextWallpaper();
+			}
 		}
 
 		#endregion

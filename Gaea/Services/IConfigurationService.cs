@@ -1,16 +1,23 @@
-﻿using Gaea.Api;
-using Gaea.Api.Configuration;
+﻿using Gaea.Api.Configuration;
 using Gaea.Api.Data;
+using Gaea.Services.Data;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Gaea.Services
 {
-	public interface IConfiguration
+	internal interface IConfigurationService
 	{
 		#region Methods
 
-		void BuildModelFromAttributes(object configObject);
+		ConfigurationMetaModel BuildModelFromAttributes(object configObject);
+
+		void PersistModel(IEnumerable<SourceConfigItem> model, object configObject);
+
+		void WriteCurrentSourceConfiguration(object configObject);
+
+		object GetCurrentSourceConfiguration();
 
 		#endregion
 
@@ -69,11 +76,6 @@ namespace Gaea.Services
 		/// Currently display image
 		/// </summary>
 		GaeaImage CurrentImage { get; set; }
-
-		/// <summary>
-		/// Model representing the configuration of the current source
-		/// </summary>
-		ConfigurationMetaModel CurrentSourceConfigurationMetaModel { get; }
 
 		/// <summary>
 		/// Timestamp for the last wallpaper update

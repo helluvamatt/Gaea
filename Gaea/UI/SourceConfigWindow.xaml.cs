@@ -1,17 +1,6 @@
-﻿using Gaea.UI.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Gaea.UI.Domain;
+using Gaea.UI.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Gaea.UI
 {
@@ -24,6 +13,13 @@ namespace Gaea.UI
 		{
 			InitializeComponent();
 			DataContext = viewModel;
+			viewModel.DismissDialog += ViewModel_DismissDialog;
+		}
+
+		private void ViewModel_DismissDialog(object sender, DismissDialogEventArgs e)
+		{
+			DialogResult = e.Result;
+			Close();
 		}
 	}
 }

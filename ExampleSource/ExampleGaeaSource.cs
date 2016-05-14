@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ExampleSource
 {
@@ -96,6 +97,7 @@ namespace ExampleSource
 			_Configuration = (ExampleSourceConfig)configuration;
 
 			// Gaea will generally call BeginFetchNext(...) immediately after calling this
+
 		}
 
 		public void Dispose()
@@ -117,13 +119,17 @@ namespace ExampleSource
 			// For this example, we just advance the list index, then call the completed handler with the image from that index
 			// Additionally, if the index is 2 (the same as the size of the array, we return an error to show the error handling
 			currentIndex++;
+			if (_Configuration.SkipThirdImage && currentIndex > (images.Count - 1)) currentIndex = 0;
 			if (currentIndex > images.Count) currentIndex = 0;
 			if (currentIndex < images.Count)
 			{
-				if (FetchNextComplete != null)
-				{
-					FetchNextComplete(images[currentIndex]);
-				}
+				Task.Factory.StartNew(() => {
+					Thread.Sleep(_Configuration.FetchDelayMs);
+					if (FetchNextComplete != null)
+					{
+						FetchNextComplete(images[currentIndex]);
+					}
+				});
 			}
 			else
 			{

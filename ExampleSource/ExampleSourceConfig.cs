@@ -7,7 +7,7 @@ namespace ExampleSource
 		[SwitchConfigurationItem("Skip Third Image", DefaultValue = true, Order = 0)]
 		public bool SkipThirdImage { get; set; }
 
-		[IntegerRangeConfigurationItem("Fetch Delay (ms)", 0, 5000, DefaultValue = 0, Order = 1)]
+		[NumericConfigurationItem("Fetch Delay (ms)", 0, 5000, DefaultValue = 0, Order = 1)]
 		public int FetchDelayMs { get; set; }
 	}
 }
