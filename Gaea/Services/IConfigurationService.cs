@@ -15,9 +15,9 @@ namespace Gaea.Services
 
 		void PersistModel(IEnumerable<SourceConfigItem> model, object configObject);
 
-		void WriteCurrentSourceConfiguration(object configObject);
+		void WriteSourceConfiguration(string sourceName, object configObject);
 
-		object GetCurrentSourceConfiguration();
+		object GetSourceConfiguration(string souceName);
 
 		#endregion
 
@@ -68,12 +68,12 @@ namespace Gaea.Services
 		bool OptimizeLayout { get; set; }
 
 		/// <summary>
-		/// Currently selected source
+		/// Currently selected source's name
 		/// </summary>
 		string CurrentSource { get; set; }
 
 		/// <summary>
-		/// Currently display image
+		/// Current image
 		/// </summary>
 		GaeaImage CurrentImage { get; set; }
 

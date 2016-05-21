@@ -16,21 +16,6 @@ namespace Gaea.UI.ViewModels
 			ConfigService = configService;
 			WallpaperService = wallpaperService;
 
-			object configObj = WallpaperService.CurrentSource.Configuration;
-			Type objType = configObj.GetType();
-			List<SourceConfigItem> itemsModel = new List<SourceConfigItem>();
-			foreach (var kvp in WallpaperService.CurrentSourceConfigurationMetaModel.Data)
-			{
-				string name = kvp.Key.Name;
-				SourceConfigItem item = new SourceConfigItem();
-				item.Attribute = kvp.Value;
-				item.Name = name;
-				item.Value = objType.GetProperty(name).GetValue(configObj);
-				itemsModel.Add(item);
-			}
-			itemsModel.Sort();
-			ItemsModel = itemsModel;
-
 			AcceptCommand = new DelegateCommand(Accept);
 		}
 
@@ -38,7 +23,29 @@ namespace Gaea.UI.ViewModels
 		public IConfigurationService ConfigService { get; private set; }
 		public IWallpaperService WallpaperService { get; private set; }
 
-		public IEnumerable<SourceConfigItem> ItemsModel { get; private set; }
+		private IEnumerable<SourceConfigItem> _ItemsModel;
+		public IEnumerable<SourceConfigItem> ItemsModel
+		{
+			get
+			{
+				if (_ItemsModel == null)
+				{
+					object configObj = WallpaperService.CurrentSource.Configuration;
+					Type objType = configObj.GetType();
+					List<SourceConfigItem> itemsModel = new List<SourceConfigItem>();
+					foreach (var kvp in WallpaperService.CurrentSourceConfigurationMetaModel.Data)
+					{
+						string name = kvp.Key.Name;
+						SourceConfigItem item = new SourceConfigItem(name, kvp.Value);
+						item.Value = objType.GetProperty(name).GetValue(configObj);
+						itemsModel.Add(item);
+					}
+					itemsModel.Sort();
+					_ItemsModel = itemsModel;
+				}
+				return _ItemsModel;
+			}
+		}
 
 		public ICommand AcceptCommand { get; private set; }
 

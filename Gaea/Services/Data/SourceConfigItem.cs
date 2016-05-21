@@ -1,15 +1,33 @@
 ﻿using Gaea.Api.Configuration;
+using Prism.Mvvm;
 using System;
 
 namespace Gaea.Services.Data
 {
-	internal class SourceConfigItem : IComparable
+	internal class SourceConfigItem : BindableBase, IComparable
 	{
-		public string Name { get; set; }
+		public SourceConfigItem(string name, ConfigurationItemAttribute attr)
+		{
+			Name = name;
+			Attribute = attr;
+		}
 
-		public ConfigurationItemAttribute Attribute { get; set; }
+		public string Name { get; private set; }
 
-		public object Value { get; set; }
+		public ConfigurationItemAttribute Attribute { get; private set; }
+
+		private object _Value;
+		public object Value
+		{
+			get
+			{
+				return _Value;
+			}
+			set
+			{
+				SetProperty(ref _Value, value);
+			}
+		}
 
 		public int CompareTo(object obj)
 		{

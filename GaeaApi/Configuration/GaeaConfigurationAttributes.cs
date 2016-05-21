@@ -33,15 +33,16 @@ namespace Gaea.Api.Configuration
 		public int Order { get; set; }
 	}
 
-	// TODO Set allowed types for the attributes below
-
 	/// <summary>
 	/// Configuration item represented as a switch having two states: on or off
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class SwitchConfigurationItemAttribute : ConfigurationItemAttribute
 	{
-		public SwitchConfigurationItemAttribute(string displayLabel) : base(displayLabel, typeof(bool)) { }
+		public SwitchConfigurationItemAttribute(string displayLabel, bool defaultValue) : base(displayLabel, typeof(bool))
+		{
+			DefaultValue = defaultValue;
+		}
 
 		/// <summary>
 		/// Default state for this configuration item
@@ -55,17 +56,15 @@ namespace Gaea.Api.Configuration
 	[AttributeUsage(AttributeTargets.Property)]
 	public class StringConfigurationItemAttribute : ConfigurationItemAttribute
 	{
-		public StringConfigurationItemAttribute(string displayLabel) : base(displayLabel, typeof(string)) { }
+		public StringConfigurationItemAttribute(string displayLabel, string defaultValue) : base(displayLabel, typeof(string))
+		{
+			DefaultValue = defaultValue;
+		}
 
 		/// <summary>
 		/// Max length of the string, set to -1 if no limit
 		/// </summary>
 		public int MaxLength { get; set; }
-
-		/// <summary>
-		/// Min length of the string
-		/// </summary>
-		public int MinLength { get; set; }
 
 		/// <summary>
 		/// Default value for the item
@@ -77,74 +76,37 @@ namespace Gaea.Api.Configuration
 	/// Configuration item represented as a numeric slider with a bounded range
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
-	public class NumericConfigurationItemAttribute : ConfigurationItemAttribute
+	public class TimeSpanConfigurationItemAttribute : ConfigurationItemAttribute
 	{
-		public NumericConfigurationItemAttribute(string displayLabel, double minValue, double maxValue) : base(displayLabel, new[] { typeof(byte), typeof(sbyte), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal) })
+		public TimeSpanConfigurationItemAttribute(string displayLabel, long minValue, long maxValue, long defaultValue) : base(displayLabel, new[] { typeof(TimeSpan), typeof(long), typeof(ulong) })
 		{
-			
-			MinValue = minValue;
-			MaxValue = maxValue;
+			MinValue = TimeSpan.FromMilliseconds(minValue);
+			MaxValue = TimeSpan.FromMilliseconds(maxValue);
+			DefaultValue = TimeSpan.FromMilliseconds(defaultValue);
 			if (MinValue > MaxValue) throw new InvalidOperationException(string.Format("Invalid range: [{0}, {0}]", minValue, maxValue));
 		}
 
 		/// <summary>
 		/// Maximum value of the item
 		/// </summary>
-		public double MaxValue { get; set; }
+		public TimeSpan MaxValue { get; set; }
 
 		/// <summary>
 		/// Minimum value of the item
 		/// </summary>
-		public double MinValue { get; set; }
+		public TimeSpan MinValue { get; set; }
 
 		/// <summary>
 		/// Default value for the item
 		/// </summary>
-		public double DefaultValue { get; set; }
-	}
-
-	/// <summary>
-	/// Configuration item represented as a choice between items
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Property)]
-	public class ChoiceConfigurationItemAttribute : ConfigurationItemAttribute
-	{
-		internal ChoiceConfigurationItemAttribute(string displayLabel, Type[] allowedTypes) : base(displayLabel, allowedTypes) { }
-
-		public ChoiceConfigurationItemAttribute(string displayLabel) : base(displayLabel, typeof(string)) { }
-
-		/// <summary>
-		/// The item's choices
-		/// </summary>
-		public List<Choice> Choices { get; set; }
-
-		/// <summary>
-		/// Default choice name for the item
-		/// </summary>
-		public string DefaultValue { get; set; }
-
-		/// <summary>
-		/// Object representing a choice for a ChoiceConfigurationItem
-		/// </summary>
-		public class Choice
-		{
-			/// <summary>
-			/// Name of the choice, used as a key in persisting the value of the choice
-			/// </summary>
-			public string Name { get; set; }
-
-			/// <summary>
-			/// Displayed text associated with the choice
-			/// </summary>
-			public string DisplayLabel { get; set; }
-		}
+		public TimeSpan DefaultValue { get; set; }
 	}
 
 	/// <summary>
 	/// Configuration item represented as a list of check boxes and (optionally) a place to write in options
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
-	public class MultiChoiceConfigurationItemAttribute : ChoiceConfigurationItemAttribute
+	public class MultiChoiceConfigurationItemAttribute : ConfigurationItemAttribute
 	{
 		public MultiChoiceConfigurationItemAttribute(string displayLabel) : base(displayLabel, new[] { typeof(IEnumerable<string>) }) { }
 
@@ -152,6 +114,49 @@ namespace Gaea.Api.Configuration
 		/// Allows the user to "write in" choices.
 		/// </summary>
 		public bool AllowOtherChoices { get; set; }
+
+		/// <summary>
+		/// The item's choices
+		/// </summary>
+		public Choice[] Choices { get; set; }
+
+		/// <summary>
+		/// Default choice name for the item
+		/// </summary>
+		public string DefaultValue { get; set; }
+	}
+
+	/// <summary>
+	/// Specifies a choice 
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+	public class ChoiceConfigurationItemChoiceAttribute : Attribute
+	{
+		public ChoiceConfigurationItemChoiceAttribute(string choiceName, string choiceDisplayLabel)
+		{
+			Choice = new Choice { Name = choiceName, DisplayLabel = choiceDisplayLabel };
+		}
+
+		/// <summary>
+		/// The choice for this attribute
+		/// </summary>
+		public Choice Choice { get; set; }
+	}
+
+	/// <summary>
+	/// Object representing a choice for a ChoiceConfigurationItem
+	/// </summary>
+	public class Choice
+	{
+		/// <summary>
+		/// Name of the choice, used as a key in persisting the value of the choice
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// Displayed text associated with the choice
+		/// </summary>
+		public string DisplayLabel { get; set; }
 	}
 
 	/// <summary>

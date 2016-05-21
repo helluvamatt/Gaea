@@ -159,17 +159,17 @@ namespace Gaea.Services.Impl
 			}
 		}
 
-		public void WriteCurrentSourceConfiguration(object configObject)
+		public void WriteSourceConfiguration(string sourceName, object configObject)
 		{
-			if (!string.IsNullOrEmpty(CurrentSource))
+			if (!string.IsNullOrEmpty(sourceName))
 			{
 				using (var appKey = GetApplicationBaseKey())
 				{
 					using (var sourcesKey = appKey.CreateSubKey(REGKEY_SOURCE_CONFIGS))
 					{
-						using (var sourceKey = sourcesKey.CreateSubKey(CurrentSource))
+						using (var sourceKey = sourcesKey.CreateSubKey(sourceName))
 						{
-							string serialized = JsonConvert.SerializeObject(configObject, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+							string serialized = JsonConvert.SerializeObject(configObject, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
 							sourceKey.SetValue(NAME_SOURCE_CONFIG, serialized, RegistryValueKind.String);
 						}
 					}
@@ -177,18 +177,19 @@ namespace Gaea.Services.Impl
 			}
 		}
 
-		public object GetCurrentSourceConfiguration()
+		public object GetSourceConfiguration(string sourceName)
 		{
-			if (!string.IsNullOrEmpty(CurrentSource))
+			if (!string.IsNullOrEmpty(sourceName))
 			{
 				using (var appKey = GetApplicationBaseKey())
 				{
 					using (var sourcesKey = appKey.CreateSubKey(REGKEY_SOURCE_CONFIGS))
 					{
-						using (var sourceKey = sourcesKey.CreateSubKey(CurrentSource))
+						using (var sourceKey = sourcesKey.CreateSubKey(sourceName))
 						{
 							string serialized = (string)sourceKey.GetValue(NAME_SOURCE_CONFIG);
-							return JsonConvert.DeserializeObject(serialized, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+							if (serialized == null) return null;
+							return JsonConvert.DeserializeObject(serialized, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
 						}
 					}
 				}

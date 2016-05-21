@@ -1,5 +1,6 @@
 ﻿using Gaea.Api;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -104,6 +105,20 @@ namespace Gaea
 		{
 			if (source == null) return null;
 			return source.GetType().FullName;
+		}
+
+		/// <summary>
+		/// Linq-style foreach
+		/// </summary>
+		/// <typeparam name="T">Type of the item</typeparam>
+		/// <param name="self">IEnumerable/></param>
+		/// <param name="action">Action to perform on the item</param>
+		public static void ForEach<T>(this IEnumerable<T> self, Action<T> action)
+		{
+			foreach (var item in self)
+			{
+				action(item);
+			}
 		}
 	}
 

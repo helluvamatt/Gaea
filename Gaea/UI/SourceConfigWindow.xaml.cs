@@ -1,6 +1,9 @@
-﻿using Gaea.UI.Domain;
+﻿using Gaea.Api.Configuration;
+using Gaea.UI.Domain;
 using Gaea.UI.ViewModels;
+using System;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Gaea.UI
 {
@@ -11,15 +14,20 @@ namespace Gaea.UI
 	{
 		public SourceConfigWindow(SourceConfigWindowViewModel viewModel)
 		{
-			InitializeComponent();
-			DataContext = viewModel;
 			viewModel.DismissDialog += ViewModel_DismissDialog;
+			DataContext = viewModel;
+			InitializeComponent();
 		}
+
+		#region Event Handlers
 
 		private void ViewModel_DismissDialog(object sender, DismissDialogEventArgs e)
 		{
 			DialogResult = e.Result;
 			Close();
 		}
+
+		#endregion
+
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using Gaea.Api;
 using Gaea.Api.Data;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -16,7 +17,7 @@ namespace ExampleSource
 		// This example is just a static list of embedded images, but the asynchrounous 
 		private List<GaeaImage> images;
 
-		private ExampleSourceConfig _Configuration = new ExampleSourceConfig() { SkipThirdImage = false, FetchDelayMs = 0 };
+		private ExampleSourceConfig _Configuration = new ExampleSourceConfig() { SkipThirdImage = false, FetchDelay = new TimeSpan(0) };
 
 		#region ISource implementation
 
@@ -124,7 +125,7 @@ namespace ExampleSource
 			if (currentIndex < images.Count)
 			{
 				Task.Factory.StartNew(() => {
-					Thread.Sleep(_Configuration.FetchDelayMs);
+					Thread.Sleep(_Configuration.FetchDelay);
 					if (FetchNextComplete != null)
 					{
 						FetchNextComplete(images[currentIndex]);

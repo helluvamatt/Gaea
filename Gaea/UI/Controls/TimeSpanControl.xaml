@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="Gaea.UI.Controls.TimeSpanControl"
+			 x:Name="uc"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Gaea.UI.Controls"
+			 xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="300">
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="../MaterialStyle.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="75" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<TextBox Grid.Column="0" DataObject.Pasting="TextBox_Pasting" PreviewTextInput="TextBox_PreviewTextInput" Text="{Binding Path=BaseValue, ElementName=uc}" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" Margin="0 0 8 0" />
+		<ComboBox x:Name="cbxMultipliers" Grid.Column="1" SelectedIndex="{Binding Path=Multiplier, ElementName=uc}" Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}">
+			<ComboBox.Items>
+				<ComboBoxItem>Milliseconds</ComboBoxItem>
+				<ComboBoxItem>Seconds</ComboBoxItem>
+				<ComboBoxItem>Minutes</ComboBoxItem>
+				<ComboBoxItem>Hours</ComboBoxItem>
+				<ComboBoxItem>Days</ComboBoxItem>
+			</ComboBox.Items>
+		</ComboBox>
+	</Grid>
+</UserControl>

@@ -145,8 +145,6 @@ namespace Gaea.Services.Impl
 
 		#region Events
 
-		public event EventHandler<PostProcessCompletedEventArgs> PostProcessComplete;
-
 		private void RaisePostProcessComplete(GaeaImage image)
 		{
 			if (PostProcessComplete != null)
@@ -154,6 +152,8 @@ namespace Gaea.Services.Impl
 				PostProcessComplete(this, new PostProcessCompletedEventArgs { Image = image });
 			}
 		}
+
+		public event EventHandler<PostProcessCompletedEventArgs> PostProcessComplete;
 
 		#endregion
 
@@ -232,15 +232,23 @@ namespace Gaea.Services.Impl
 				_CurrentSource.FetchNextComplete -= CurrentSource_FetchNextComplete;
 			}
 
-			ConfigurationMetaModel configModel;
+			ConfigurationMetaModel configModel = null;
 			try
 			{
+				// Load source configuration and pass it to the new source
+				object configObject = _Configuration.GetSourceConfiguration(newSource.GetName());
+				if (configObject != null)
+				{
+					newSource.Configure(configObject);
+				}
+
+				// Build config object model
 				configModel = _Configuration.BuildModelFromAttributes(newSource.Configuration);
 			}
 			catch (Exception ex)
 			{
-				_Logger.Exception(ex, "Caught exception from BuildModelFromAttributes: {0}", ex.Message);
-				// TODO Error dialog/message
+				_Logger.Exception(ex, "Caught exception while configuring source: {0}", ex.Message);
+				Error("Failed to Configure Source", "There was a problem configuring the wallpaper source. Check the logs for more details.");
 				return;
 			}
 
@@ -251,7 +259,7 @@ namespace Gaea.Services.Impl
 			catch (Exception ex)
 			{
 				_Logger.Exception(ex, "Caught exception in Initialize: {0}", ex.Message);
-				// TODO Error dialog/message
+				Error("Failed to Initialize Source", "There was a problem initializing the wallpaper source. Check the logs for more details.");
 				return;
 			}
 
@@ -270,10 +278,10 @@ namespace Gaea.Services.Impl
 			SetProperty(ref _CurrentSource, newSource);
 			
 			// Save source selection to configuration service
-			_Configuration.CurrentSource = _CurrentSource.GetName();	
+			_Configuration.CurrentSource = _CurrentSource.GetName();
 			
 			// Immediately trigger a fetch next event
-			NextWallpaper();
+			NextWallpaper(false);
 		}
 
 		private void CancelPendingFetch()
@@ -287,6 +295,11 @@ namespace Gaea.Services.Impl
 		private void Error(string subject, string message)
 		{
 			_EventAggregator.GetEvent<WallpaperServiceErrorEvent>().Publish(new WallpaperServiceError { Subject = subject, Message = message });
+		}
+
+		private void NextWallpaper(bool manual)
+		{
+			EnqueueMessage(new ServiceMessage { Type = MessageType.BeginNextWallpaper, Data1 = manual });
 		}
 
 		#endregion
@@ -321,7 +334,7 @@ namespace Gaea.Services.Impl
 					}
 					else
 					{
-						NextWallpaper();
+						NextWallpaper(false);
 					}
 				}
 
@@ -337,7 +350,7 @@ namespace Gaea.Services.Impl
 
 		public void NextWallpaper()
 		{
-			EnqueueMessage(new ServiceMessage { Type = MessageType.BeginNextWallpaper });
+			NextWallpaper(true);
 		}
 
 		public void OpenWallpaperLink()
@@ -360,10 +373,10 @@ namespace Gaea.Services.Impl
 				CurrentSource.Configure(configuration);
 
 				// Write configuration
-				_Configuration.WriteCurrentSourceConfiguration(configuration);
+				_Configuration.WriteSourceConfiguration(CurrentSource.GetName(), configuration);
 
 				// Immediately schedule a new fetch
-				NextWallpaper();
+				NextWallpaper(false);
 			}
 		}
 
@@ -431,6 +444,7 @@ namespace Gaea.Services.Impl
 							// Call into the current source
 							if (_CurrentSource != null)
 							{
+								_EventAggregator.GetEvent<WallpaperChangingEvent>().Publish((bool)msg.Data1);
 								_CurrentSource.BeginFetchNext(fetchCancelTokenSource.Token);
 							}
 							break;

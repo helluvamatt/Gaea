@@ -42,7 +42,7 @@
 				</md:ToggleButtonAssist.OnContent>
 			</ToggleButton>
 		</StackPanel>
-		<DataGrid Grid.Row="1" ItemsSource="{Binding LogEntries}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" AutoGenerateColumns="False" CanUserSortColumns="False" x:Name="logViewDataGrid">
+		<DataGrid Grid.Row="1" ItemsSource="{Binding LogEntries}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" AutoGenerateColumns="False" CanUserSortColumns="False" SelectionMode="Single" SelectionUnit="FullRow" IsReadOnly="True" x:Name="logViewDataGrid">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}">
 					<DataGridTextColumn.ElementStyle>
