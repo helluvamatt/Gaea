@@ -161,7 +161,7 @@
     <Compile Include="Services\Impl\DummyLocalizationService.cs" />
     <Compile Include="Services\Impl\FileCacheImageManager.cs" />
     <Compile Include="Services\Impl\GdiPlusImageProcessor.cs" />
-    <Compile Include="Services\Impl\NLogLoggingService.cs" />
+    <Compile Include="Services\Impl\NLogLoggerFacade.cs" />
     <Compile Include="Services\Impl\ConfigurationService.cs" />
     <Compile Include="Services\Impl\SourceRegistry.cs" />
     <Compile Include="Services\NLogEventEmitter.cs" />
@@ -172,11 +172,13 @@
       <DependentUpon>TimeSpanControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Domain\DismissDialogEventArgs.cs" />
+    <Compile Include="UI\Domain\ErrorEventArgs.cs" />
     <Compile Include="UI\Domain\LogEntry.cs" />
     <Compile Include="UI\Domain\GlobalCommands.cs" />
     <Compile Include="Services\Data\SourceItem.cs" />
     <Compile Include="Services\Data\SourceConfigItem.cs" />
     <Compile Include="UI\Domain\SourceConfigTemplateSelector.cs" />
+    <Compile Include="UI\Domain\StringConfigurationItemValidationRule.cs" />
     <Compile Include="UI\LogWindow.xaml.cs">
       <DependentUpon>LogWindow.xaml</DependentUpon>
     </Compile>

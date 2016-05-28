@@ -10,8 +10,6 @@ namespace Gaea.UI.Controls
 	/// </summary>
 	public partial class TimeSpanControl : UserControl
 	{
-		
-
 		private static readonly long[] multipliers = new long[] { 1, 1000, 60000, 360000, 8640000 }; // ms, sec, min, hour, day
 
 		public TimeSpanControl()

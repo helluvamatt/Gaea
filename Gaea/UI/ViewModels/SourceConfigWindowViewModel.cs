@@ -8,6 +8,7 @@ using System.Windows.Input;
 
 namespace Gaea.UI.ViewModels
 {
+	// TODO Need to fix the color palette so that everything renders correctly without having to explictly set Foreground and Background
 	internal class SourceConfigWindowViewModel : LocalizableViewModel
 	{
 		public SourceConfigWindowViewModel(ILoggingService loggingService, IWallpaperService wallpaperService, IConfigurationService configService)
@@ -47,7 +48,7 @@ namespace Gaea.UI.ViewModels
 			}
 		}
 
-		public ICommand AcceptCommand { get; private set; }
+		#region Events
 
 		public event EventHandler<DismissDialogEventArgs> DismissDialog;
 		private void RaiseDismissDialog(bool result)
@@ -57,6 +58,21 @@ namespace Gaea.UI.ViewModels
 				DismissDialog(this, new DismissDialogEventArgs { Result = result });
 			}
 		}
+
+		public event EventHandler<ErrorEventArgs> Error;
+		private void RaiseError(string subject, string message)
+		{
+			if (Error != null)
+			{
+				Error(this, new ErrorEventArgs { Subject = subject, Message = message });
+			}
+		}
+
+		#endregion
+
+		#region Commands
+
+		public ICommand AcceptCommand { get; private set; }
 
 		private void Accept()
 		{
@@ -69,10 +85,11 @@ namespace Gaea.UI.ViewModels
 				// Validate the model and copy properties back to the configObj
 				ConfigService.PersistModel(ItemsModel, configObj);
 			}
-			catch (Exception ex) // TODO Exception type for validation?
+			catch (Exception ex)
 			{
 				LoggingService.Exception(ex, "Exception caught from PersistModel: {0}", ex.Message);
-				// TODO Handle validation errors on the model
+				RaiseError("Error", "There was a problem configuring the source: " + ex.Message);
+				return;
 			}
 
 			try
@@ -83,10 +100,13 @@ namespace Gaea.UI.ViewModels
 			catch (Exception ex)
 			{
 				LoggingService.Exception(ex, "Exception caught from ConfigureCurrentSource: {0}", ex.Message);
-				// TODO Handle error: "There was a problem configuring the source: <message>"
+				RaiseError("Error", "There was a problem configuring the source: " + ex.Message);
+				return;
 			}
 
 			RaiseDismissDialog(true);
 		}
+
+		#endregion
 	}
 }

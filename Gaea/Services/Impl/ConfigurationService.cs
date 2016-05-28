@@ -150,12 +150,19 @@ namespace Gaea.Services.Impl
 			foreach (var item in model)
 			{
 				PropertyInfo prop = objType.GetProperty(item.Name);
-				object value = item.Value;
-				if (item.Value.GetType() != prop.PropertyType)
+				if (item.Value != null)
 				{
-					value = TypeDescriptor.GetProperties(configObject)[item.Name].Converter.ConvertTo(value, prop.PropertyType);
+					object value = item.Value;
+					if (item.Value.GetType() != prop.PropertyType)
+					{
+						value = TypeDescriptor.GetProperties(configObject)[item.Name].Converter.ConvertTo(value, prop.PropertyType);
+					}
+					prop.SetValue(configObject, value);
 				}
-				prop.SetValue(configObject, value);
+				else
+				{
+					prop.SetValue(configObject, null);
+				}
 			}
 		}
 

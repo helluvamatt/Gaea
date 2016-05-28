@@ -62,9 +62,14 @@ namespace Gaea.Api.Configuration
 		}
 
 		/// <summary>
-		/// Max length of the string, set to -1 if no limit
+		/// Max length of the string, set to 0 if not limit
 		/// </summary>
 		public int MaxLength { get; set; }
+
+		/// <summary>
+		/// Whether this configuration item must have a value
+		/// </summary>
+		public bool Required { get; set; }
 
 		/// <summary>
 		/// Default value for the item

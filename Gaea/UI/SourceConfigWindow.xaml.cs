@@ -15,6 +15,7 @@ namespace Gaea.UI
 		public SourceConfigWindow(SourceConfigWindowViewModel viewModel)
 		{
 			viewModel.DismissDialog += ViewModel_DismissDialog;
+			viewModel.Error += ViewModel_Error;
 			DataContext = viewModel;
 			InitializeComponent();
 		}
@@ -25,6 +26,13 @@ namespace Gaea.UI
 		{
 			DialogResult = e.Result;
 			Close();
+		}
+
+		private void ViewModel_Error(object sender, ErrorEventArgs e)
+		{
+			dialogTitle.Text = e.Subject;
+			dialogBody.Text = e.Message;
+			dialogHost.IsOpen = true;
 		}
 
 		#endregion

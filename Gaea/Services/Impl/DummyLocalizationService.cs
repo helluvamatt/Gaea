@@ -19,7 +19,7 @@ namespace Gaea.Services.Impl
 
 		public string GetLocalizedString(string key, params object[] parms)
 		{
-			return string.Format(key, parms);
+			return string.Format("!!" + key + "!!", parms);
 		}
 	}
 }

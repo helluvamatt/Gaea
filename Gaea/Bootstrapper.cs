@@ -50,7 +50,7 @@ namespace Gaea
 
 		protected override ILoggerFacade CreateLogger()
 		{
-			_LoggingService = new NLogLoggingService(LogManager.GetCurrentClassLogger());
+			_LoggingService = new NLogLoggerFacade(LogManager.GetCurrentClassLogger());
 			return _LoggingService;
 		}
 

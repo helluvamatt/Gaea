@@ -9,8 +9,12 @@
 		xmlns:ui="clr-namespace:Gaea.UI"
 		xmlns:domain="clr-namespace:Gaea.UI.Domain"
 		xmlns:uc="clr-namespace:Gaea.UI.Controls"
+		xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Source Configuration" MinWidth="300" MinHeight="300" Width="400" Height="400" Icon="{DynamicResource appIcon}">
+        Title="Source Configuration" MinWidth="300" MinHeight="300" Width="400" Height="400" Icon="{DynamicResource appIcon}"
+		TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+		TextElement.FontFamily="{DynamicResource MaterialDesignFont}"
+		Background="{DynamicResource MaterialDesignPaper}">
 	<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -20,27 +24,68 @@
 			<domain:SourceConfigTemplateSelector x:Key="templateSelector" />
 			<local:IconConverter x:Key="iconConverter" />
 			<DataTemplate x:Key="SwitchDataTemplate">
-				<ToggleButton HorizontalAlignment="Left" Style="{DynamicResource ResourceKey=MaterialDesignSwitchToggleButton}" IsChecked="{Binding Path=Value}" />
+				<StackPanel Orientation="Horizontal">
+					<ToggleButton HorizontalAlignment="Left" Style="{DynamicResource ResourceKey=MaterialDesignSwitchToggleButton}" IsChecked="{Binding Path=Value}" />
+				</StackPanel>
 			</DataTemplate>
 			<DataTemplate x:Key="StringDataTemplate">
-				<TextBox HorizontalAlignment="Stretch" MaxLength="{Binding Path=Attribute.MaxLength}" Text="{Binding Path=Value}" Foreground="{DynamicResource MaterialDesignBody}" />
+				<TextBox HorizontalAlignment="Stretch" MaxLength="{Binding Path=Attribute.MaxLength}" md:TextFieldAssist.Hint="Enter a value...">
+					<TextBox.Text>
+						<Binding Path="Value" UpdateSourceTrigger="PropertyChanged">
+							<Binding.ValidationRules>
+								<domain:StringConfigurationItemValidationRule>
+									<domain:StringConfigurationItemValidationRule.Configuration>
+										<domain:StringConfigurationItemValidationRuleConfiguration MaxLength="{Binding Path=Attribute.MaxLength}" Required="{Binding Path=Attribute.Required}" />
+									</domain:StringConfigurationItemValidationRule.Configuration>
+								</domain:StringConfigurationItemValidationRule>
+							</Binding.ValidationRules>
+						</Binding>
+					</TextBox.Text>
+				</TextBox>
 			</DataTemplate>
 			<DataTemplate x:Key="TimeSpanDataTemplate">
-				<uc:TimeSpanControl x:Name="timeSpanControl" HorizontalAlignment="Left" MaxValue="{Binding Path=Attribute.MaxValue}" MinValue="{Binding Path=Attribute.MinValue}" Value="{Binding Path=Value}" />
+				<uc:TimeSpanControl x:Name="timeSpanControl" HorizontalAlignment="Stretch" MaxValue="{Binding Path=Attribute.MaxValue}" MinValue="{Binding Path=Attribute.MinValue}" Value="{Binding Path=Value}" />
 			</DataTemplate>
 			<DataTemplate x:Key="MultiChoiceDataTemplate">
+				<!-- TODO Chips -->
 				<Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
 			</DataTemplate>
 		</ResourceDictionary>
 	</Window.Resources>
 	<md:DialogHost x:Name="dialogHost">
+		<md:DialogHost.DialogContent>
+			<StackPanel Margin="16">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="auto" />
+						<RowDefinition Height="auto" />
+						<RowDefinition Height="auto" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<md:PackIcon Grid.Row="0" Grid.Column="0" Kind="Alert" Width="24px" Height="24px" Margin="0 0 8 0" />
+					<TextBlock Grid.Row="0" Grid.Column="1" x:Name="dialogTitle" Style="{DynamicResource ResourceKey=MaterialDesignTitleTextBlock}" Text="Error!" />
+					<TextBlock Grid.Row="1" Grid.ColumnSpan="2" x:Name="dialogBody" Style="{DynamicResource ResourceKey=MaterialDesignBody1TextBlock}" Margin="0 8 0 8" Text="An error occurred somewhere." />
+					<StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="md:DialogHost.CloseDialogCommand">
+							<Button.CommandParameter>
+								<system:Boolean>True</system:Boolean>
+							</Button.CommandParameter>
+							OK
+						</Button>
+					</StackPanel>
+				</Grid>
+			</StackPanel>
+		</md:DialogHost.DialogContent>
 		<Grid Background="{DynamicResource MaterialDesignPaper}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="auto" />
 				<RowDefinition Height="*" />
 				<RowDefinition Height="auto" />
 			</Grid.RowDefinitions>
-			<md:Card Grid.Row="0" Padding="7" Margin="3.5" Background="{DynamicResource PrimaryHueLightBrush}">
+			<md:Card Grid.Row="0" Padding="7" Margin="3.5" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="auto" />
@@ -59,20 +104,19 @@
 				<ItemsControl ItemsSource="{Binding Path=ItemsModel}">
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
-							<StackPanel Orientation="Vertical">
-								<TextBlock Margin="8 8 8 8" Style="{DynamicResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignBody}" Text="{Binding Path=Attribute.DisplayLabel}" TextTrimming="CharacterEllipsis" TextAlignment="Left" FontWeight="Bold" TextWrapping="NoWrap" />
-								<ContentPresenter Margin="8 0 8 8" ContentTemplateSelector="{StaticResource templateSelector}" Content="{Binding}" />
-							</StackPanel>
+							<GroupBox Margin="8 8 8 0" Header="{Binding Path=Attribute.DisplayLabel}">
+								<ContentPresenter Margin="8 8 8 8" ContentTemplateSelector="{StaticResource templateSelector}" Content="{Binding}" />
+							</GroupBox>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 			</ScrollViewer>
 			<StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
-				<Button Style="{DynamicResource MaterialDesignRaisedButton }" Margin="0 8 8 8" IsCancel="True">
-					<md:PackIcon Kind="WindowClose" />
+				<Button Style="{DynamicResource MaterialDesignFlatButtonDark }" Margin="0 8 8 8" IsCancel="True">
+					CANCEL
 				</Button>
-				<Button Style="{DynamicResource MaterialDesignRaisedButton }" Margin="0 8 8 8" Command="{Binding Path=AcceptCommand}" IsDefault="True">
-					<md:PackIcon Kind="Check" />
+				<Button Style="{DynamicResource MaterialDesignFlatButtonDark }" Margin="0 8 8 8" Command="{Binding Path=AcceptCommand}" IsDefault="True">
+					ACCEPT
 				</Button>
 			</StackPanel>
 		</Grid>

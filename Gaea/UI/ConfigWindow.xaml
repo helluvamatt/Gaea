@@ -13,17 +13,13 @@
 		Closing="Window_Closing"
         Title="Gaea" Height="600" Width="800" Icon="{DynamicResource appIcon}"
 		TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-		Background="{DynamicResource MaterialDesignPaper}"
-		TextElement.FontWeight="Medium"
-        TextElement.FontSize="14"
-        FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto">
+		TextElement.FontFamily="{DynamicResource MaterialDesignFont}"
+		Background="{DynamicResource MaterialDesignPaper}">
 	<Window.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="Styles.xaml" />
 				<ResourceDictionary Source="MaterialStyle.xaml" />
-				<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
-				<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 			<local:IconConverter x:Key="iconConverter" />
 			<local:BitmapConverter x:Key="bitmapConverter" />
@@ -35,36 +31,23 @@
 			<RowDefinition Height="*" />
 			<RowDefinition Height="auto" />
 			<RowDefinition Height="auto" />
+			<RowDefinition Height="auto" />
+			<RowDefinition Height="auto" />
+			<RowDefinition Height="auto" />
 		</Grid.RowDefinitions>
-		<md:Card Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" Padding="2" Background="{DynamicResource PrimaryHueLightBrush}" TextElement.Foreground="{DynamicResource PrimaryHueLightForegroundBrush}">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="*" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
-				<Image x:Name="previewImage" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding Path=PreviewImage, Converter={StaticResource bitmapConverter}}" />
-				<TextBlock Grid.Row="1" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="7" ToolTip="{Binding Configuration.CurrentImage.Title}" Text="{Binding Configuration.CurrentImage.Title}" />
-				<TextBlock Grid.Row="2" TextWrapping="Wrap" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="7" Text="{Binding Configuration.CurrentImage.Description}" />
-				<StackPanel Grid.Row="3">
-					<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-						<Button x:Name="openButton" ToolTip="Open link..." Margin="0 4 4 4" Command="{ Binding Path=WallpaperService.OpenWallpaperLinkCommand }" Style="{DynamicResource MaterialDesignFloatingActionDarkButton}" >
-							<md:PackIcon Kind="OpenInNew" Width="24" Height="24" />
-						</Button>
-						<Button x:Name="nextButton" ToolTip="Next" Margin="0 4 4 4" Command="{ Binding Path=WallpaperService.NextWallpaperCommand }" Style="{DynamicResource MaterialDesignFloatingActionDarkButton}" >
-							<md:PackIcon Kind="ArrowRight" Width="24" Height="24" />
-						</Button>
-					</StackPanel>
-				</StackPanel>
-				<Border Background="#77000000" Grid.RowSpan="3" BorderThickness="0" Visibility="{Binding Path=IsLoading, Converter={StaticResource boolToVisibilityConverter}}">
-					<md:Card UniformCornerRadius="14" Padding="0" VerticalAlignment="Center" HorizontalAlignment="Center" Background="{DynamicResource PrimaryHueLightBrush}">
-						<ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 12 12 12"/>
-					</md:Card>
-				</Border>
-			</Grid>
-		</md:Card>
-		<GroupBox Grid.Column="0" Grid.Row="1" Header="Source">
+		<Image x:Name="previewImage" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="{Binding Path=PreviewImage, Converter={StaticResource bitmapConverter}}" />
+		<ProgressBar Grid.Row="0" VerticalAlignment="Top" Value="0" IsIndeterminate="True" Margin="-8" Visibility="{Binding Path=IsLoading, Converter={StaticResource boolToVisibilityConverter}}" />
+		<TextBlock Grid.Row="1" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="0 8 0 0" ToolTip="{Binding Configuration.CurrentImage.Title}" Text="{Binding Configuration.CurrentImage.Title}" />
+		<TextBlock Grid.Row="2" TextWrapping="Wrap" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0 8 0 0" Text="{Binding Configuration.CurrentImage.Description}" />
+		<StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+			<Button Style="{DynamicResource MaterialDesignFloatingActionMiniButton}" Command="{ Binding Path=WallpaperService.OpenWallpaperLinkCommand }" md:RippleAssist.IsCentered="True" Margin="8 8 8 8">
+				<md:PackIcon Kind="OpenInNew" />
+			</Button>
+			<Button Style="{DynamicResource MaterialDesignFloatingActionMiniButton}" Command="{ Binding Path=WallpaperService.NextWallpaperCommand }" md:RippleAssist.IsCentered="True" Margin="0 8 8 8">
+				<md:PackIcon Kind="ArrowRightBold" />
+			</Button>
+		</StackPanel>
+		<GroupBox Grid.Row="4" Header="Source">
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
@@ -98,12 +81,12 @@
 						</DataTemplate>
 					</ComboBox.ItemTemplate>
 				</ComboBox>
-				<Button Grid.Column="1" Margin="7" Style="{DynamicResource MaterialDesignFloatingActionMiniButton}" IsEnabled="{Binding WallpaperService.CanConfigureSource}" Command="{Binding SourceConfigurationCommand }">
-					<md:PackIcon Kind="Settings" Height="16" Width="16" />
+				<Button Grid.Column="1" Margin="7" Style="{DynamicResource MaterialDesignRaisedButton}" IsEnabled="{Binding WallpaperService.CanConfigureSource}" Command="{Binding SourceConfigurationCommand }">
+					CONFIG
 				</Button>
 			</Grid>
 		</GroupBox>
-		<GroupBox Grid.Column="0" Grid.Row="2" Header="Advanced Configuration">
+		<GroupBox Grid.Row="5" Header="Advanced Configuration">
 			<StackPanel>
 				<Grid>
 					<Grid.RowDefinitions>
