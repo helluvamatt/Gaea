@@ -161,8 +161,8 @@
     <Compile Include="Services\Impl\DummyLocalizationService.cs" />
     <Compile Include="Services\Impl\FileCacheImageManager.cs" />
     <Compile Include="Services\Impl\GdiPlusImageProcessor.cs" />
-    <Compile Include="Services\Impl\NLogLoggerFacade.cs" />
     <Compile Include="Services\Impl\ConfigurationService.cs" />
+    <Compile Include="Services\Impl\NLogLoggingService.cs" />
     <Compile Include="Services\Impl\SourceRegistry.cs" />
     <Compile Include="Services\NLogEventEmitter.cs" />
     <Compile Include="UI\Balloon.xaml.cs">
