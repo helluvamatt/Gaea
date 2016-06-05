@@ -167,7 +167,14 @@ namespace Gaea.Services.Impl
 		private void CurrentSource_FetchError(string errorTitle, string errorMessage)
 		{
 			Error(errorTitle, errorMessage);
-			// TODO Set timeout for next attempt
+			if (_Configuration.CurrentImage == null)
+			{
+				NextWallpaper();
+			}
+			else
+			{
+				// TODO Set timeout for next attempt
+			}
 		}
 
 		private void CurrentSource_FetchNextComplete(GaeaImage next)

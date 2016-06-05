@@ -8,7 +8,6 @@ using System.Windows.Input;
 
 namespace Gaea.UI.ViewModels
 {
-	// TODO Need to fix the color palette so that everything renders correctly without having to explictly set Foreground and Background
 	internal class SourceConfigWindowViewModel : LocalizableViewModel
 	{
 		public SourceConfigWindowViewModel(ILoggingService loggingService, IWallpaperService wallpaperService, IConfigurationService configService)
