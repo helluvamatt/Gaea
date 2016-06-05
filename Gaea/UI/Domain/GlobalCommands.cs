@@ -7,7 +7,5 @@ namespace Gaea.UI.Domain
 		public static readonly CompositeCommand ShutdownCommand = new CompositeCommand();
 
 		public static readonly CompositeCommand ShowConfigCommand = new CompositeCommand();
-
-		public static readonly CompositeCommand ShowLogWindowCommand = new CompositeCommand();
 	}
 }

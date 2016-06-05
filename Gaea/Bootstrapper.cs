@@ -24,8 +24,6 @@ namespace Gaea
 		private ILoggingService _LoggingService;
 		private TrayIcon trayIcon;
 
-		private LogWindow _LogWindow;
-
 		#endregion
 
 		public Bootstrapper(string[] args)
@@ -37,7 +35,6 @@ namespace Gaea
 			};
 			var extra = options.Parse(args);
 			GlobalCommands.ShowConfigCommand.RegisterCommand(new DelegateCommand(ShowConfig));
-			GlobalCommands.ShowLogWindowCommand.RegisterCommand(new DelegateCommand(ShowLogWindow));
 		}
 
 		#region Prism application lifecycle
@@ -59,7 +56,6 @@ namespace Gaea
 			base.ConfigureContainer();
 
 			Container.RegisterInstance(_LoggingService, new ContainerControlledLifetimeManager());
-			Container.RegisterType<NLogEventEmitter>();
 
 			Container.RegisterType<ILocalizationService, DummyLocalizationService>(new ContainerControlledLifetimeManager());
 			Container.RegisterType<IWallpaperService, WallpaperService>(new ContainerControlledLifetimeManager());
@@ -68,8 +64,6 @@ namespace Gaea
 			Container.RegisterType<IImageProcessor, GdiPlusImageProcessor>(new ContainerControlledLifetimeManager());
 			Container.RegisterType<ISourceRegistry, SourceRegistry>(new ContainerControlledLifetimeManager());
 
-			Container.RegisterType<LogWindowViewModel>();
-			Container.RegisterType<LogWindow>();
 			Container.RegisterType<ConfigWindowViewModel>();
 			Container.RegisterType<ConfigWindow>();
 			Container.RegisterType<TrayIconViewModel>();
@@ -101,41 +95,12 @@ namespace Gaea
 			{
 				ShowConfig();
 			}
-
-#if DEBUG
-			ShowLogWindow();
-#endif
-
-			// Start emitting LogEvents
-			Container.Resolve<NLogEventEmitter>();
 		}
 
 		private void ShowConfig()
 		{
 			var configWindow = ((ConfigWindow)Shell);
 			ActivateWindow(configWindow);
-		}
-
-		private void ShowLogWindow()
-		{
-			if (_LogWindow == null)
-			{
-				_LogWindow = Container.Resolve<LogWindow>();
-				_LogWindow.Closed += _LogWindow_Closed;
-				var configWindow = ((ConfigWindow)Shell);
-				if (configWindow != null && configWindow.IsVisible && configWindow.WindowState == WindowState.Normal)
-				{
-					_LogWindow.WindowStartupLocation = WindowStartupLocation.Manual;
-					_LogWindow.Left = configWindow.Left + configWindow.Width;
-					_LogWindow.Top = configWindow.Top;
-				}
-			}
-			ActivateWindow(_LogWindow);
-		}
-
-		private void _LogWindow_Closed(object sender, EventArgs e)
-		{
-			_LogWindow = null;
 		}
 
 		private void ActivateWindow(Window window)

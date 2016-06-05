@@ -22,8 +22,6 @@
 				</MenuItem.Header>
 			</MenuItem>
 			<Separator />
-			<MenuItem Header="Show Log Window" Command="{ x:Static domain:GlobalCommands.ShowLogWindowCommand }" />
-			<Separator />
 			<MenuItem x:Name="nextBackgroundMenuItem" Header="Next Desktop Background" Command="{ Binding Path=WallpaperService.NextWallpaperCommand }" />
 			<MenuItem x:Name="openUrlMenuItem" Header="Open Source in Browser" Command="{ Binding Path=WallpaperService.OpenWallpaperLinkCommand }" />
 			<Separator />
