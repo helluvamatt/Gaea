@@ -97,7 +97,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.4\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.3.5\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Prism, Version=6.1.0.0, Culture=neutral, PublicKeyToken=91a96d2a154366d8, processorArchitecture=MSIL">
@@ -150,6 +150,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Services\Data\Enums.cs" />
+    <Compile Include="Services\Data\Extensions.cs" />
     <Compile Include="Services\Data\PostProcessCompletedEventArgs.cs" />
     <Compile Include="Services\Data\PostProcessMessage.cs" />
     <Compile Include="Services\IConfigurationService.cs" />
@@ -169,13 +171,19 @@
     <Compile Include="UI\Controls\TimeSpanControl.xaml.cs">
       <DependentUpon>TimeSpanControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Domain\BooleanToVisibilityConverter.cs" />
     <Compile Include="UI\Domain\DismissDialogEventArgs.cs" />
+    <Compile Include="UI\Domain\EditMultiChoiceEventArgs.cs" />
     <Compile Include="UI\Domain\ErrorEventArgs.cs" />
     <Compile Include="UI\Domain\GlobalCommands.cs" />
     <Compile Include="Services\Data\SourceItem.cs" />
     <Compile Include="Services\Data\SourceConfigItem.cs" />
     <Compile Include="UI\Domain\SourceConfigTemplateSelector.cs" />
     <Compile Include="UI\Domain\StringConfigurationItemValidationRule.cs" />
+    <Compile Include="UI\Domain\StringListDisplayConverter.cs" />
+    <Compile Include="UI\MultiChoiceEditor.xaml.cs">
+      <DependentUpon>MultiChoiceEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\SourceConfigWindow.xaml.cs">
       <DependentUpon>SourceConfigWindow.xaml</DependentUpon>
     </Compile>
@@ -187,6 +195,7 @@
       <DependentUpon>TrayIcon.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\ViewModels\ConfigWindowViewModel.cs" />
+    <Compile Include="UI\ViewModels\MultiChoiceEditorViewModel.cs" />
     <Compile Include="UI\ViewModels\SourceConfigWindowViewModel.cs" />
     <Compile Include="UI\ViewModels\TrayIconViewModel.cs" />
     <Compile Include="Utils.cs" />
@@ -211,6 +220,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\MaterialStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\MultiChoiceEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

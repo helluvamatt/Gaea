@@ -22,6 +22,8 @@
 				<ResourceDictionary Source="MaterialStyle.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 			<domain:SourceConfigTemplateSelector x:Key="templateSelector" />
+			<domain:StringListDisplayConverter x:Key="stringListDisplayConverter" EmptyText="No items selected..." /><!-- TODO I18n -->
+			<domain:StringListEmptyItalicConverter x:Key="stringListEmptyItalicConverter" />
 			<local:IconConverter x:Key="iconConverter" />
 			<DataTemplate x:Key="SwitchDataTemplate">
 				<StackPanel Orientation="Horizontal">
@@ -47,8 +49,11 @@
 				<uc:TimeSpanControl x:Name="timeSpanControl" HorizontalAlignment="Stretch" MaxValue="{Binding Path=Attribute.MaxValue}" MinValue="{Binding Path=Attribute.MinValue}" Value="{Binding Path=Value}" />
 			</DataTemplate>
 			<DataTemplate x:Key="MultiChoiceDataTemplate">
-				<!-- TODO Chips -->
-				<Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+				<Button Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=DataContext.EditMultiChoiceCommand}" CommandParameter="{Binding}">
+					<Button.Content>
+						<TextBlock FontStyle="{Binding Path=Value, Converter={StaticResource stringListEmptyItalicConverter}}" Text="{Binding Path=Value, Converter={StaticResource stringListDisplayConverter}}" />
+					</Button.Content> 
+				</Button>
 			</DataTemplate>
 		</ResourceDictionary>
 	</Window.Resources>

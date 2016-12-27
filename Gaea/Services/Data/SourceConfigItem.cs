@@ -1,6 +1,9 @@
 ﻿using Gaea.Api.Configuration;
+using Prism.Commands;
 using Prism.Mvvm;
 using System;
+using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace Gaea.Services.Data
 {
@@ -10,6 +13,7 @@ namespace Gaea.Services.Data
 		{
 			Name = name;
 			Attribute = attr;
+			DeleteItemCommand = new DelegateCommand<string>(DeleteItem);
 		}
 
 		public string Name { get; private set; }
@@ -29,6 +33,8 @@ namespace Gaea.Services.Data
 			}
 		}
 
+		public ICommand DeleteItemCommand { get; private set; }
+
 		public int CompareTo(object obj)
 		{
 			var other = obj as SourceConfigItem;
@@ -40,6 +46,11 @@ namespace Gaea.Services.Data
 			return result;
 		}
 
+		private void DeleteItem(string item)
+		{
+			var collection = (ICollection<string>)Value;
+			collection.Remove(item);
+		}
 
 	}
 }

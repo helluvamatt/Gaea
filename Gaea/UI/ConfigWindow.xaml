@@ -7,6 +7,8 @@
 		xmlns:i="clr-namespace:System.Windows.Interop;assembly=PresentationCore"
         xmlns:localui="clr-namespace:Gaea.UI"
 		xmlns:local="clr-namespace:Gaea"
+		xmlns:cc="clr-namespace:Gaea.UI.Controls"
+		xmlns:sdat="clr-namespace:Gaea.Services.Data"
 		x:Class="Gaea.UI.ConfigWindow"
 		x:ClassModifier="internal"
         mc:Ignorable="d"
@@ -23,12 +25,14 @@
 			</ResourceDictionary.MergedDictionaries>
 			<local:IconConverter x:Key="iconConverter" />
 			<local:BitmapConverter x:Key="bitmapConverter" />
+			<sdat:EnumMatchConverter x:Key="enumMatchConverter" />
 			<BooleanToVisibilityConverter x:Key="boolToVisibilityConverter" />
 		</ResourceDictionary>
 	</Window.Resources>
 	<Grid Margin="8">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
+			<RowDefinition Height="auto" />
 			<RowDefinition Height="auto" />
 			<RowDefinition Height="auto" />
 			<RowDefinition Height="auto" />
@@ -47,79 +51,113 @@
 				<md:PackIcon Kind="ArrowRightBold" />
 			</Button>
 		</StackPanel>
-		<GroupBox Grid.Row="4" Header="Source">
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="auto" />
-				</Grid.ColumnDefinitions>
-				<ComboBox
+		<Expander Grid.Row="4">
+			<Expander.Header>
+				<TextBlock>Source</TextBlock>
+			</Expander.Header>
+			<Border CornerRadius="5" BorderBrush="{DynamicResource MaterialDesignBody}" BorderThickness="1" Padding="8">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="auto" />
+					</Grid.ColumnDefinitions>
+					<ComboBox
 					Grid.Column="0"
 					Margin="8" HorizontalAlignment="Stretch"
 					ItemsSource="{Binding WallpaperService.Sources}"
 					SelectedValuePath="Name"
 					SelectedValue="{Binding WallpaperService.SelectedSource, Mode=TwoWay}">
-					<ComboBox.ItemTemplate>
-						<DataTemplate>
-							<Grid Margin="7">
-								<Grid.Resources>
-									<Style x:Key="descriptionText" BasedOn="{StaticResource MaterialDesignBody1TextBlock}" TargetType="TextBlock">
-										<Setter Property="Foreground" Value="#FFAAAAAA"/>
-										<Setter Property="TextWrapping" Value="NoWrap" />
-										<Setter Property="TextTrimming" Value="CharacterEllipsis" />
-									</Style>
-								</Grid.Resources>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="32" />
-									<ColumnDefinition Width="auto" />
-									<ColumnDefinition Width="*" />
-								</Grid.ColumnDefinitions>
-								<Image Grid.Column="0" Source="{Binding Path=Icon, Converter={StaticResource iconConverter}}" Margin="0 0 7 0" VerticalAlignment="Center" />
-								<TextBlock Grid.Column="1" Text="{Binding DisplayName}" TextWrapping="NoWrap" Style="{DynamicResource MaterialDesignHeadlineTextBlock }" VerticalAlignment="Center" Margin="0 0 7 0" />
-								<TextBlock Grid.Column="2" Text="{Binding Description}" Style="{StaticResource descriptionText}" VerticalAlignment="Center" />
-							</Grid>
-						</DataTemplate>
-					</ComboBox.ItemTemplate>
-				</ComboBox>
-				<Button Grid.Column="1" Margin="7" Style="{DynamicResource MaterialDesignRaisedButton}" IsEnabled="{Binding WallpaperService.CanConfigureSource}" Command="{Binding SourceConfigurationCommand }">
-					CONFIG
-				</Button>
-			</Grid>
-		</GroupBox>
-		<GroupBox Grid.Row="5" Header="Advanced Configuration">
-			<StackPanel>
-				<Grid>
+						<ComboBox.ItemTemplate>
+							<DataTemplate>
+								<Grid Margin="7">
+									<Grid.Resources>
+										<Style x:Key="descriptionText" BasedOn="{StaticResource MaterialDesignBody1TextBlock}" TargetType="TextBlock">
+											<Setter Property="Foreground" Value="#FFAAAAAA"/>
+											<Setter Property="TextWrapping" Value="NoWrap" />
+											<Setter Property="TextTrimming" Value="CharacterEllipsis" />
+										</Style>
+									</Grid.Resources>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="32" />
+										<ColumnDefinition Width="auto" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<Image Grid.Column="0" Source="{Binding Path=Icon, Converter={StaticResource iconConverter}}" Margin="0 0 7 0" VerticalAlignment="Center" />
+									<TextBlock Grid.Column="1" Text="{Binding DisplayName}" TextWrapping="NoWrap" Style="{DynamicResource MaterialDesignHeadlineTextBlock }" VerticalAlignment="Center" Margin="0 0 7 0" />
+									<TextBlock Grid.Column="2" Text="{Binding Description}" Style="{StaticResource descriptionText}" VerticalAlignment="Center" />
+								</Grid>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+					<Button Grid.Column="1" Margin="7" Style="{DynamicResource MaterialDesignRaisedButton}" IsEnabled="{Binding WallpaperService.CanConfigureSource}" Command="{Binding SourceConfigurationCommand }">
+						CONFIG
+					</Button>
+				</Grid>
+			</Border>
+		</Expander>
+		<Expander Grid.Row="5" IsExpanded="True">
+			<Expander.Header>
+				<TextBlock>Automatic Wallpaper Updates</TextBlock>
+			</Expander.Header>
+			<Border CornerRadius="5" BorderBrush="{DynamicResource MaterialDesignBody}" BorderThickness="1" Padding="8">
+				<Grid Margin="16 0 0 0">
 					<Grid.RowDefinitions>
-						<RowDefinition Height="auto" />
-						<RowDefinition Height="auto" />
-						<RowDefinition Height="auto" />
+						<RowDefinition Height="32px" />
+						<RowDefinition Height="32px" />
+						<RowDefinition Height="32px" />
 					</Grid.RowDefinitions>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="auto" />
 						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
-					<md:PackIcon Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Kind="Blur" />
-					<md:PackIcon Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Kind="Brightness2" />
-					<md:PackIcon Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Kind="ImageFilterBlackWhite" />
-					<Slider Grid.Column="1" Grid.Row="0" Margin="8" VerticalAlignment="Center" x:Name="blurSlider" Value="{Binding Path=Configuration.Blur}" AutoToolTipPlacement="TopLeft" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" ToolTip="Blur" />
-					<Slider Grid.Column="1" Grid.Row="1" Margin="8" VerticalAlignment="Center" x:Name="darkenSlider" Value="{Binding Path=Configuration.Darken}" AutoToolTipPlacement="TopLeft" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" ToolTip="Darken" />
-					<Slider Grid.Column="1" Grid.Row="2" Margin="8" VerticalAlignment="Center" x:Name="desturateSlider" Value="{Binding Path=Configuration.Desaturate}" AutoToolTipPlacement="TopLeft" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" ToolTip="Desaturate" />
+					<RadioButton Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" GroupName="automaticUpdateChoice" Name="automaticModeNone" IsChecked="{Binding Path=Configuration.AutomaticMode, Mode=TwoWay, Converter={StaticResource enumMatchConverter }, ConverterParameter=None}" />
+					<RadioButton Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" GroupName="automaticUpdateChoice" Name="automaticModeOnStartup" IsChecked="{Binding Path=Configuration.AutomaticMode, Mode=TwoWay, Converter={StaticResource enumMatchConverter }, ConverterParameter=OnStartup}" />
+					<RadioButton Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" GroupName="automaticUpdateChoice" Name="automaticModeTimeInterval" IsChecked="{Binding Path=Configuration.AutomaticMode, Mode=TwoWay, Converter={StaticResource enumMatchConverter }, ConverterParameter=TimeInterval}" />
+					<TextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="8 0 0 0">No Automatic Updates</TextBlock>
+					<TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="8 0 0 0">On Startup</TextBlock>
+					<cc:TimeSpanControl Grid.Column="1" Grid.Row="2" Margin="8 0 0 0" VerticalAlignment="Center" MinValue="0:1" Value="{Binding Path=Configuration.AutomaticDelay}" IsEnabled="{Binding ElementName=automaticModeTimeInterval, Path=IsChecked}"></cc:TimeSpanControl>
 				</Grid>
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="auto" />
-						<RowDefinition Height="auto" />
-					</Grid.RowDefinitions>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="auto" />
-						<ColumnDefinition Width="*" />
-					</Grid.ColumnDefinitions>
-					<Label Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">Optimize image size for monitor layout</Label>
-					<Label Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">Run on startup</Label>
-					<ToggleButton Grid.Column="0" Grid.Row="0" x:Name="optimizeImageSizeCheckBox" VerticalAlignment="Center" Margin="8" IsChecked="{Binding Path=Configuration.OptimizeLayout}" />
-					<ToggleButton Grid.Column="0" Grid.Row="1" x:Name="runAtStartupCheckBox" VerticalAlignment="Center" Margin="8" IsChecked="{Binding Path=Configuration.AutoStart}" />
-				</Grid>
-			</StackPanel>
-		</GroupBox>
+			</Border>
+		</Expander>
+		<Expander Grid.Row="6" IsExpanded="True">
+			<Expander.Header>
+				<TextBlock>Advanced Configuration</TextBlock>
+			</Expander.Header>
+			<Border CornerRadius="5" BorderBrush="{DynamicResource MaterialDesignBody}" BorderThickness="1" Padding="8">
+				<StackPanel>
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="auto" />
+							<RowDefinition Height="auto" />
+							<RowDefinition Height="auto" />
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="auto" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<md:PackIcon Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Kind="Blur" />
+						<md:PackIcon Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Kind="Brightness2" />
+						<md:PackIcon Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Kind="ImageFilterBlackWhite" />
+						<Slider Grid.Column="1" Grid.Row="0" Margin="8" VerticalAlignment="Center" x:Name="blurSlider" Value="{Binding Path=Configuration.Blur}" AutoToolTipPlacement="TopLeft" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" ToolTip="Blur" />
+						<Slider Grid.Column="1" Grid.Row="1" Margin="8" VerticalAlignment="Center" x:Name="darkenSlider" Value="{Binding Path=Configuration.Darken}" AutoToolTipPlacement="TopLeft" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" ToolTip="Darken" />
+						<Slider Grid.Column="1" Grid.Row="2" Margin="8" VerticalAlignment="Center" x:Name="desturateSlider" Value="{Binding Path=Configuration.Desaturate}" AutoToolTipPlacement="TopLeft" Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" ToolTip="Desaturate" />
+					</Grid>
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="auto" />
+							<RowDefinition Height="auto" />
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="auto" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<Label Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">Optimize image size for monitor layout</Label>
+						<Label Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">Run on startup</Label>
+						<ToggleButton Grid.Column="0" Grid.Row="0" x:Name="optimizeImageSizeCheckBox" VerticalAlignment="Center" Margin="8" IsChecked="{Binding Path=Configuration.OptimizeLayout}" />
+						<ToggleButton Grid.Column="0" Grid.Row="1" x:Name="runAtStartupCheckBox" VerticalAlignment="Center" Margin="8" IsChecked="{Binding Path=Configuration.AutoStart}" />
+					</Grid>
+				</StackPanel>
+			</Border>
+		</Expander>
 	</Grid>
 </Window>

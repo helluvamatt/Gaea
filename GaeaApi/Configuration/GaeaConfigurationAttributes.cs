@@ -113,7 +113,7 @@ namespace Gaea.Api.Configuration
 	[AttributeUsage(AttributeTargets.Property)]
 	public class MultiChoiceConfigurationItemAttribute : ConfigurationItemAttribute
 	{
-		public MultiChoiceConfigurationItemAttribute(string displayLabel) : base(displayLabel, new[] { typeof(IEnumerable<string>) }) { }
+		public MultiChoiceConfigurationItemAttribute(string displayLabel) : base(displayLabel, new[] { typeof(ICollection<string>) }) { }
 
 		/// <summary>
 		/// Allows the user to "write in" choices.
@@ -123,7 +123,7 @@ namespace Gaea.Api.Configuration
 		/// <summary>
 		/// The item's choices
 		/// </summary>
-		public Choice[] Choices { get; set; }
+		public string[] Choices { get; set; }
 
 		/// <summary>
 		/// Default choice name for the item
@@ -137,31 +137,15 @@ namespace Gaea.Api.Configuration
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
 	public class ChoiceConfigurationItemChoiceAttribute : Attribute
 	{
-		public ChoiceConfigurationItemChoiceAttribute(string choiceName, string choiceDisplayLabel)
+		public ChoiceConfigurationItemChoiceAttribute(string choice)
 		{
-			Choice = new Choice { Name = choiceName, DisplayLabel = choiceDisplayLabel };
+			Choice = choice;
 		}
 
 		/// <summary>
 		/// The choice for this attribute
 		/// </summary>
-		public Choice Choice { get; set; }
-	}
-
-	/// <summary>
-	/// Object representing a choice for a ChoiceConfigurationItem
-	/// </summary>
-	public class Choice
-	{
-		/// <summary>
-		/// Name of the choice, used as a key in persisting the value of the choice
-		/// </summary>
-		public string Name { get; set; }
-
-		/// <summary>
-		/// Displayed text associated with the choice
-		/// </summary>
-		public string DisplayLabel { get; set; }
+		public string Choice { get; set; }
 	}
 
 	/// <summary>

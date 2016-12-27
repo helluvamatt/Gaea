@@ -16,6 +16,7 @@ namespace Gaea.UI
 		{
 			viewModel.DismissDialog += ViewModel_DismissDialog;
 			viewModel.Error += ViewModel_Error;
+			viewModel.EditMultiChoice += ViewModel_EditMultiChoice;
 			DataContext = viewModel;
 			InitializeComponent();
 		}
@@ -33,6 +34,13 @@ namespace Gaea.UI
 			dialogTitle.Text = e.Subject;
 			dialogBody.Text = e.Message;
 			dialogHost.IsOpen = true;
+		}
+
+		private void ViewModel_EditMultiChoice(object sender, EditMultiChoiceEventArgs e)
+		{
+			MultiChoiceEditorViewModel viewModel = new MultiChoiceEditorViewModel(e.Item);
+			MultiChoiceEditor editor = new MultiChoiceEditor(viewModel);
+			editor.ShowDialog();
 		}
 
 		#endregion

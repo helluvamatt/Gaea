@@ -34,13 +34,12 @@ namespace Gaea.Services.Impl
 		private ISource _CurrentSource;
 		private ConfigurationMetaModel _CurrentSourceConfigurationMetaModel;
 
-		private Thread wallpaperServiceThread;
-		private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-		private CancellationTokenSource fetchCancelTokenSource = new CancellationTokenSource();
+		private Thread _WallpaperServiceThread;
+		private CancellationTokenSource _CancelTokenSource = new CancellationTokenSource();
+		private CancellationTokenSource _FetchCancelTokenSource = new CancellationTokenSource();
 
-		private BlockingCollection<ServiceMessage> messageQueue;
-		// TODO Allow automatic advancing of the wallpaper
-		//private Timer nextWallpaperTimeout;
+		private BlockingCollection<ServiceMessage> _MessageQueue;
+		private Timer _NextWallpaperTimeout;
 
 		#endregion
 
@@ -51,22 +50,26 @@ namespace Gaea.Services.Impl
 			_EventAggregator = eventAggregator;
 			_Configuration = configuration;
 			_ImageManager = imageManager;
-			messageQueue = new BlockingCollection<ServiceMessage>();
+			_MessageQueue = new BlockingCollection<ServiceMessage>();
+			_NextWallpaperTimeout = new Timer(_NextWallpaperTimeout_TimerCallback, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
 
 			_NextWallpaperCommand = new DelegateCommand(NextWallpaper);
 			_OpenWallpaperLinkCommand = new DelegateCommand(OpenWallpaperLink);
 
 			// Bind events
 			_Configuration.ConfigurationChanged += _Configuration_ConfigurationChanged;
+			_Configuration.AutoSettingsChanged += _Configuration_AutoSettingsChanged;
 
 			moduleManager.LoadModuleCompleted += ModuleManager_LoadModuleCompleted;
 			_ImageManager.Complete += _ImageManager_Complete;
 			_ImageManager.Error += _ImageManager_Error;
 
 			// Start service thread
-			wallpaperServiceThread = new Thread(WallpaperServiceThreadStart);
-			wallpaperServiceThread.Name = "WallpaperServiceThread";
-			wallpaperServiceThread.Start();
+			_WallpaperServiceThread = new Thread(WallpaperServiceThreadStart);
+			_WallpaperServiceThread.Name = "WallpaperServiceThread";
+			_WallpaperServiceThread.Start();
+
+
 		}
 
 		#region Properties
@@ -164,16 +167,36 @@ namespace Gaea.Services.Impl
 			EnqueueMessage(new ServiceMessage { Type = MessageType.ConfigChange });
 		}
 
+		private void _Configuration_AutoSettingsChanged(object sender, EventArgs e)
+		{
+			if (_Configuration.AutomaticMode == AutomaticMode.TimeInterval)
+			{
+				// Time delayed, base the initial delay since the last update
+				TimeSpan initialDelay = _Configuration.AutomaticDelay;
+				if (_Configuration.LastUpdate.HasValue)
+				{
+					DateTime nextUpdate = _Configuration.LastUpdate.Value + _Configuration.AutomaticDelay;
+					initialDelay = nextUpdate - DateTime.Now;
+					if (initialDelay < TimeSpan.Zero)
+					{
+						initialDelay = TimeSpan.Zero;
+					}
+				}
+				_NextWallpaperTimeout.Change(initialDelay, _Configuration.AutomaticDelay);
+			}
+			else
+			{
+				// Disable time delay
+				_NextWallpaperTimeout.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+			}
+		}
+
 		private void CurrentSource_FetchError(string errorTitle, string errorMessage)
 		{
 			Error(errorTitle, errorMessage);
 			if (_Configuration.CurrentImage == null)
 			{
 				NextWallpaper();
-			}
-			else
-			{
-				// TODO Set timeout for next attempt
 			}
 		}
 
@@ -205,6 +228,11 @@ namespace Gaea.Services.Impl
 		private void _ImageManager_Complete(object sender, PostProcessCompletedEventArgs e)
 		{
 			EnqueueMessage(new ServiceMessage { Type = MessageType.EndPostProcess, Data1 = e.Image });
+		}
+
+		private void _NextWallpaperTimeout_TimerCallback(object state)
+		{
+			NextWallpaper();
 		}
 
 		#endregion
@@ -294,9 +322,9 @@ namespace Gaea.Services.Impl
 		private void CancelPendingFetch()
 		{
 			// Cancel pending fetch and reset the fetchCancelTokenSource
-			fetchCancelTokenSource.Cancel();
-			fetchCancelTokenSource.Dispose();
-			fetchCancelTokenSource = new CancellationTokenSource();
+			_FetchCancelTokenSource.Cancel();
+			_FetchCancelTokenSource.Dispose();
+			_FetchCancelTokenSource = new CancellationTokenSource();
 		}
 
 		private void Error(string subject, string message)
@@ -338,14 +366,21 @@ namespace Gaea.Services.Impl
 						{
 							_Logger.Exception(ex, "Failed to load current image: {0}", ex.Message);
 						}
+
+						if (_Configuration.AutomaticMode == AutomaticMode.OnStartup)
+						{
+							NextWallpaper(true);
+						}
+						else if (_Configuration.AutomaticMode == AutomaticMode.TimeInterval)
+						{
+							_NextWallpaperTimeout.Change(_Configuration.AutomaticDelay, _Configuration.AutomaticDelay);
+						}
 					}
 					else
 					{
 						NextWallpaper(false);
 					}
 				}
-
-				// TODO Schedule auto updates
 			}
 			else
 			{
@@ -394,10 +429,10 @@ namespace Gaea.Services.Impl
 		public void Dispose()
 		{
 			// Prepare the message processor to shut down
-			cancelTokenSource.Cancel();
+			_CancelTokenSource.Cancel();
 
 			// Cancel pending requests
-			fetchCancelTokenSource.Cancel();
+			_FetchCancelTokenSource.Cancel();
 
 			// Dispose the current source
 			if (_CurrentSource != null)
@@ -406,7 +441,7 @@ namespace Gaea.Services.Impl
 			}
 
 			// Wait for the thread to terminate
-			wallpaperServiceThread.Join();
+			_WallpaperServiceThread.Join();
 		}
 
 		#endregion
@@ -417,7 +452,7 @@ namespace Gaea.Services.Impl
 		{
 			try
 			{
-				messageQueue.Add(msg, cancelTokenSource.Token);
+				_MessageQueue.Add(msg, _CancelTokenSource.Token);
 			}
 			catch (OperationCanceledException) { } // Ignore
 		}
@@ -426,7 +461,7 @@ namespace Gaea.Services.Impl
 		{
 			try
 			{
-				foreach (ServiceMessage msg in messageQueue.GetConsumingEnumerable(cancelTokenSource.Token))
+				foreach (ServiceMessage msg in _MessageQueue.GetConsumingEnumerable(_CancelTokenSource.Token))
 				{
 					_Logger.Debug("[WallpaperServiceThread] Processing message: [Type = {0}  Data1 = {1}  Data2 = {2}]", msg.Type, msg.Data1, msg.Data2);
 					switch (msg.Type)
@@ -452,7 +487,7 @@ namespace Gaea.Services.Impl
 							if (_CurrentSource != null)
 							{
 								_EventAggregator.GetEvent<WallpaperChangingEvent>().Publish((bool)msg.Data1);
-								_CurrentSource.BeginFetchNext(fetchCancelTokenSource.Token);
+								_CurrentSource.BeginFetchNext(_FetchCancelTokenSource.Token);
 							}
 							break;
 						case MessageType.EndNextWallpaper:
@@ -470,7 +505,7 @@ namespace Gaea.Services.Impl
 							break;
 					}
 				}
-				messageQueue.CompleteAdding();
+				_MessageQueue.CompleteAdding();
 			}
 			catch (OperationCanceledException) { } // Ignore
 		}

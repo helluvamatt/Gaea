@@ -16,10 +16,10 @@ namespace ExampleSource
 		public string TestStringItem { get; set; }
 
 		[MultiChoiceConfigurationItem("Test Multi Choice Item", Order = 3, AllowOtherChoices = true)]
-		[ChoiceConfigurationItemChoice("item_1", "Item 1")]
-		[ChoiceConfigurationItemChoice("item_2", "Item 2")]
-		[ChoiceConfigurationItemChoice("item_3", "Item 3")]
-		[ChoiceConfigurationItemChoice("item_4", "Item 4")]
+		[ChoiceConfigurationItemChoice("Item 1")]
+		[ChoiceConfigurationItemChoice("Item 2")]
+		[ChoiceConfigurationItemChoice("Item 3")]
+		[ChoiceConfigurationItemChoice("Item 4")]
 		public IEnumerable<string> TestMultiChoiceItem { get; set; }
 	}
 }

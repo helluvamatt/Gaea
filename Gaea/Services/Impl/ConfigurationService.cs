@@ -25,6 +25,8 @@ namespace Gaea.Services.Impl
 		public const string NAME_DARKEN = "Darken"; // DWORD
 		public const string NAME_DESATURATE = "Desaturate"; // DWORD
 		public const string NAME_OPTIMIZE_LAYOUT = "OptimizeLayout"; // DWORD 0x0 or 0x1
+		public const string NAME_AUTOMATIC_MODE = "AutomaticMode"; // DWORD (enum value)
+		public const string NAME_AUTOMATIC_DELAY = "AutomaticDelay"; // QWORD (tick count, see TimeSpan)
 
 		private const string NAME_SOURCE_CONFIG = "Config"; // SZ
 
@@ -54,25 +56,27 @@ namespace Gaea.Services.Impl
 
 			using (RegistryKey appKey = GetApplicationBaseKey())
 			{
-				_CurrentSource = (string)appKey.GetValue(NAME_CURRENT_SOURCE);
-				var currentImageJson = (string)appKey.GetValue(NAME_CURRENT_IMAGE);
+				_CurrentSource = appKey.GetValue<string>(NAME_CURRENT_SOURCE);
+				var currentImageJson = appKey.GetValue<string>(NAME_CURRENT_IMAGE);
 				if (currentImageJson != null)
 				{
 					_CurrentImage = JsonConvert.DeserializeObject<GaeaImage>(currentImageJson);
 				}
-				string lastUpdateStr = (string)appKey.GetValue(NAME_LAST_UPDATED);
+				string lastUpdateStr = appKey.GetValue<string>(NAME_LAST_UPDATED);
 				if (lastUpdateStr != null)
 				{
 					_LastUpdate = DateTime.Parse(lastUpdateStr);
 				}
 				else
 				{
-					_LastUpdate = DateTime.MinValue;
+					_LastUpdate = null;
 				}
-				_Blur = (int)appKey.GetValue(NAME_BLUR, DEFAULT_BLUR);
-				_Darken = (int)appKey.GetValue(NAME_DARKEN, DEFAULT_DARKEN);
-				_Desaturate = (int)appKey.GetValue(NAME_DESATURATE, DEFAULT_DESATURATE);
-				_OptimizeLayout = (int)appKey.GetValue(NAME_OPTIMIZE_LAYOUT, 1) == 1;
+				_Blur = appKey.GetValue<int>(NAME_BLUR, DEFAULT_BLUR);
+				_Darken = appKey.GetValue<int>(NAME_DARKEN, DEFAULT_DARKEN);
+				_Desaturate = appKey.GetValue<int>(NAME_DESATURATE, DEFAULT_DESATURATE);
+				_OptimizeLayout = appKey.GetValue<int>(NAME_OPTIMIZE_LAYOUT, 1) == 1;
+				_AutomaticMode = (AutomaticMode)appKey.GetValue<int>(NAME_AUTOMATIC_MODE);
+				_AutomaticDelay = new TimeSpan(appKey.GetValue<long>(NAME_AUTOMATIC_DELAY));
 			}
 
 			PropertyChanged += RegistryConfiguration_PropertyChanged;
@@ -110,6 +114,14 @@ namespace Gaea.Services.Impl
 						break;
 					case NAME_LAST_UPDATED:
 						appKey.SetValue(NAME_LAST_UPDATED, string.Format("{0:O}", _LastUpdate), RegistryValueKind.String);
+						break;
+					case NAME_AUTOMATIC_MODE:
+						appKey.SetValue(NAME_AUTOMATIC_MODE, (int)_AutomaticMode, RegistryValueKind.DWord);
+						RaiseAutoSettingsChanged();
+						break;
+					case NAME_AUTOMATIC_DELAY:
+						appKey.SetValue(NAME_AUTOMATIC_DELAY, _AutomaticDelay.Ticks, RegistryValueKind.QWord);
+						RaiseAutoSettingsChanged();
 						break;
 				}
 			}
@@ -367,8 +379,8 @@ namespace Gaea.Services.Impl
 			}
 		}
 
-		private DateTime _LastUpdate;
-		public DateTime LastUpdate
+		private DateTime? _LastUpdate;
+		public DateTime? LastUpdate
 		{
 			get
 			{
@@ -409,6 +421,32 @@ namespace Gaea.Services.Impl
 			}
 		}
 
+		private AutomaticMode _AutomaticMode;
+		public AutomaticMode AutomaticMode
+		{
+			get
+			{
+				return _AutomaticMode;
+			}
+			set
+			{
+				SetProperty(ref _AutomaticMode, value);
+			}
+		}
+
+		private TimeSpan _AutomaticDelay;
+		public TimeSpan AutomaticDelay
+		{
+			get
+			{
+				return _AutomaticDelay;
+			}
+			set
+			{
+				SetProperty(ref _AutomaticDelay, value);
+			}
+		}
+
 		public Rectangle ScreenBounds
 		{
 			get
@@ -444,6 +482,16 @@ namespace Gaea.Services.Impl
 		}
 
 		public event EventHandler CurrentImageChanged;
+
+		private void RaiseAutoSettingsChanged()
+		{
+			if (AutoSettingsChanged != null)
+			{
+				AutoSettingsChanged(this, EventArgs.Empty);
+			}
+		}
+
+		public event EventHandler AutoSettingsChanged;
 
 		#endregion
 	}

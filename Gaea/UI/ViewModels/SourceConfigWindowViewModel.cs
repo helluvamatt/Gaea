@@ -17,6 +17,7 @@ namespace Gaea.UI.ViewModels
 			WallpaperService = wallpaperService;
 
 			AcceptCommand = new DelegateCommand(Accept);
+			EditMultiChoiceCommand = new DelegateCommand<SourceConfigItem>(DoEditMultiChoice);
 		}
 
 		public ILoggingService LoggingService { get; private set; }
@@ -52,19 +53,19 @@ namespace Gaea.UI.ViewModels
 		public event EventHandler<DismissDialogEventArgs> DismissDialog;
 		private void RaiseDismissDialog(bool result)
 		{
-			if (DismissDialog != null)
-			{
-				DismissDialog(this, new DismissDialogEventArgs { Result = result });
-			}
+			DismissDialog?.Invoke(this, new DismissDialogEventArgs { Result = result });
 		}
 
 		public event EventHandler<ErrorEventArgs> Error;
 		private void RaiseError(string subject, string message)
 		{
-			if (Error != null)
-			{
-				Error(this, new ErrorEventArgs { Subject = subject, Message = message });
-			}
+			Error?.Invoke(this, new ErrorEventArgs { Subject = subject, Message = message });
+		}
+
+		public event EventHandler<EditMultiChoiceEventArgs> EditMultiChoice;
+		private void RaiseEditMultiChoice(SourceConfigItem item)
+		{
+			EditMultiChoice?.Invoke(this, new EditMultiChoiceEventArgs { Item = item });
 		}
 
 		#endregion
@@ -104,6 +105,12 @@ namespace Gaea.UI.ViewModels
 			}
 
 			RaiseDismissDialog(true);
+		}
+
+		public ICommand EditMultiChoiceCommand { get; private set; }
+		private void DoEditMultiChoice(SourceConfigItem item)
+		{
+			RaiseEditMultiChoice(item);
 		}
 
 		#endregion

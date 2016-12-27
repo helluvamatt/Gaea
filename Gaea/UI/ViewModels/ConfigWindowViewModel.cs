@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Microsoft.Practices.Unity;
 using Prism.Events;
 using Gaea.Api.Data;
+using System;
 
 namespace Gaea.UI.ViewModels
 {
@@ -30,33 +31,6 @@ namespace Gaea.UI.ViewModels
 			}
 		}
 
-		#endregion
-
-		public ConfigWindowViewModel(IConfigurationService configuration, IWallpaperService wallpaperService, IEventAggregator eventAggregator)
-		{
-			Configuration = configuration;
-			WallpaperService = wallpaperService;
-			WallpaperService.PostProcessComplete += WallpaperService_PostProcessComplete;
-			eventAggregator.GetEvent<WallpaperChangingEvent>().Subscribe((manual) => { IsLoading = true; });
-			eventAggregator.GetEvent<WallpaperServiceErrorEvent>().Subscribe((error) => { IsLoading = false; });
-		}
-
-		private void WallpaperService_PostProcessComplete(object sender, Services.Data.PostProcessCompletedEventArgs e)
-		{
-			Application.Current.Dispatcher.Invoke(() => {
-				PreviewImage = e.Image.ProcessedImage;
-				IsLoading = false;
-			});
-		}
-
-		public ICommand SourceConfigurationCommand
-		{
-			get
-			{
-				return new DelegateCommand(DoSourceConfiguration);
-			}
-		}
-
 		private bool _IsLoading;
 		public bool IsLoading
 		{
@@ -70,10 +44,49 @@ namespace Gaea.UI.ViewModels
 			}
 		}
 
+		#endregion
+
+		public ConfigWindowViewModel(IConfigurationService configuration, IWallpaperService wallpaperService, IEventAggregator eventAggregator)
+		{
+			Configuration = configuration;
+			WallpaperService = wallpaperService;
+			WallpaperService.PostProcessComplete += WallpaperService_PostProcessComplete;
+			SourceConfigurationCommand = new DelegateCommand(DoSourceConfiguration);
+			eventAggregator.GetEvent<WallpaperChangingEvent>().Subscribe((manual) => { IsLoading = true; });
+			eventAggregator.GetEvent<WallpaperServiceErrorEvent>().Subscribe((error) => { IsLoading = false; });
+		}
+
+		#region Event handlers
+
+		private void WallpaperService_PostProcessComplete(object sender, Services.Data.PostProcessCompletedEventArgs e)
+		{
+			Application.Current.Dispatcher.Invoke(() => {
+				PreviewImage = e.Image.ProcessedImage;
+				IsLoading = false;
+			});
+		}
+
+		#endregion
+
+		#region Events
+
+		public event EventHandler SourceConfiguration;
+		private void RaiseSourceConfiguration()
+		{
+			SourceConfiguration?.Invoke(this, EventArgs.Empty);
+		}
+
+		#endregion
+
+		#region Commands
+
+		public ICommand SourceConfigurationCommand { get; private set; }
+
 		private void DoSourceConfiguration()
 		{
-			var sourceConfigWindow = Container.Resolve<SourceConfigWindow>();
-			sourceConfigWindow.ShowDialog();
+			RaiseSourceConfiguration();
 		}
+
+		#endregion
 	}
 }

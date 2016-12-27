@@ -80,12 +80,22 @@ namespace Gaea.Services
 		/// <summary>
 		/// Timestamp for the last wallpaper update
 		/// </summary>
-		DateTime LastUpdate { get; set; }
+		DateTime? LastUpdate { get; set; }
 
 		/// <summary>
 		/// Should the application be started at login? Implementation should handle configuring the system.
 		/// </summary>
 		bool AutoStart { get; set; }
+
+		/// <summary>
+		/// Automatic wallpaper advance mode
+		/// </summary>
+		AutomaticMode AutomaticMode { get; set; }
+
+		/// <summary>
+		/// Time delay for automatic time advance
+		/// </summary>
+		TimeSpan AutomaticDelay { get; set; }
 
 		/// <summary>
 		/// Get a Rectangle representing the size of the entire desktop (including all active monitors)
@@ -98,6 +108,7 @@ namespace Gaea.Services
 
 		event EventHandler ConfigurationChanged;
 		event EventHandler CurrentImageChanged;
+		event EventHandler AutoSettingsChanged;
 
 		#endregion
 	}
